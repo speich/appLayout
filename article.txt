@@ -1,0 +1,25 @@
+The purpose of this article is to show you the power of HTML5 for application development insbesondere the flexbox layout.
+ The user will be able to drag and drop panes around to completely rearrange or and create a new application layout which suits them the best.
+ To see what I mean, have a look at the demo. You can drag each pane around and drop it in a new location. Readers familiar
+ with Adobe Bridge or Adobe
+
+We will make use of the following web technologies: css transitions, flexbox layout, dojo toolkit (no, for once its' not jQuery ;-), drag n drop
+css variables.
+
+1.
+Lets start with our initial application layout. It is made up of a header, main and footer element. The main contains our
+base elements contentPane (show image). Are layed out in a flexbox layout see article...
+
+I find it hard to remember, that flex-direction column means the stretching not the result of the child items.
+
+Each base element is div element of class contentPane and consists of a header and a section element.
+
+Dropping within a contentPane means splitting into two (implemented as insert parent and insertBefore/after), dropping between (above, below, left right) insert new contentPane
+
+We add three divs to display possible drop targets within the contentPane, we also add put them in a paneContainer to be able to implement the insert later.
+
+Nest lets add the transition to depict a potential drop target when dragging on hover
+show bow-shadow transition only after start of drag by adding the corresponding class
+
+2.
+In the next step we add the vertical separators, which later will allow the user to resize the contentPanes, they also serve as a dropping target
