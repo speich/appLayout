@@ -17,8 +17,8 @@ define(['dojo/_base/declare', 'dojo/_base/lang', 'dojo/on'], function(declare, l
 	 * @class layout.Divider
 	 * @property {String} type vertical or horizontal divider
 	 * @property {HTMLElement} domNode divider container
-	 * @property {HTMLElement} fixedNode fixed container
-	 * @property {HTMLElement} flexibleNode flexible container
+	 * @property {HTMLElement} leftNode fixed container
+	 * @property {HTMLElement} rightNode flexible container
 	 * @property {String} fixedNodePosition location relative to divider
 	 */
 	return declare(null, /* @lends Splitter.prototype */ {
@@ -26,8 +26,8 @@ define(['dojo/_base/declare', 'dojo/_base/lang', 'dojo/on'], function(declare, l
 		type: 'vertical',
 		_lastX: 0,	// store x coordinate of last mouse position
 		domNode: null,
-		fixedNode: null,
-		flexibleNode: null,
+		leftNode: null,
+		rightNode: null,
 		fixedNodePosition: 'left',
 
 		constructor: function(params) {
@@ -38,19 +38,27 @@ define(['dojo/_base/declare', 'dojo/_base/lang', 'dojo/on'], function(declare, l
 		/**
 		 *	Initializes the divider layout.
 		 * @param {HTMLElement} domNode divider
-		 * @param {HTMLElement} fixedNode node with initial fixed with
-		 * @param {HTMLElement} flexibleNode flexible node
+		 * @param {HTMLElement} node1 node to the left or above
+		 * @param {HTMLElement} node2 node to the right or below
 		 */
-		init: function(domNode, fixedNode, flexibleNode) {
-			var self = this;
+		init: function(domNode, node1, node2) {
 
 			this.domNode = domNode;
-			this.fixedNode = fixedNode;
-			this.flexibleNode = flexibleNode;
+			this.leftNode = node1;
+			this.rightNode = node2;
 
-			on(domNode, 'mousedown', function(evt) {
-				var signal;
+			this.setupEvents();
+		},
 
+		setupEvents: function() {
+			var self = this;
+
+			on(this.domNode, 'mousedown', function(evt) {
+				var signal,
+					w = parseInt(d.defaultView.getComputedStyle(self.leftNode, '').getPropertyValue('width'), 10);
+
+				self.leftNode.style.width = w + 'px';
+				self.leftNode.style.flex = 'none';
 				self._lastX = evt.pageX;
 
 				evt.preventDefault(); // prevent text selection when dragging
@@ -61,7 +69,7 @@ define(['dojo/_base/declare', 'dojo/_base/lang', 'dojo/on'], function(declare, l
 				signal = on(window, 'mouseup', lang.hitch(self, self.endDrag));
 				self.evtHandlers.push(signal);
 
-				on.emit(domNode, 'divider-dragstart', {
+				on.emit(self.domNode, 'divider-dragstart', {
 					bubbles: true,
 					cancelable: true
 				});
@@ -73,7 +81,7 @@ define(['dojo/_base/declare', 'dojo/_base/lang', 'dojo/on'], function(declare, l
 		 * @param {Event} evt
 		 */
 		drag: function(evt) {
-			var w = parseInt(d.defaultView.getComputedStyle(this.fixedNode, '').getPropertyValue('width'));
+			var w = parseInt(d.defaultView.getComputedStyle(this.leftNode, '').getPropertyValue('width'), 10);
 
 			if (this.fixedNodePosition === 'left') {
 				w += evt.pageX - this._lastX;
@@ -81,7 +89,7 @@ define(['dojo/_base/declare', 'dojo/_base/lang', 'dojo/on'], function(declare, l
 			else {
 				w -= evt.pageX - this._lastX;
 			}
-			this.fixedNode.style.width = w + 'px';
+			this.leftNode.style.width = w + 'px';
 			this._lastX = evt.pageX;
 		},
 
@@ -92,6 +100,7 @@ define(['dojo/_base/declare', 'dojo/_base/lang', 'dojo/on'], function(declare, l
 			this.evtHandlers.forEach(function(signal) {
 				signal.remove();
 			});
+
 			on.emit(this.domNode, 'divider-dragend', {
 				bubbles: true,
 				cancelable: true
