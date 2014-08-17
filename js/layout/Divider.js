@@ -36,7 +36,7 @@ define(['dojo/_base/declare', 'dojo/_base/lang', 'dojo/on'], function(declare, l
 		},
 
 		/**
-		 *	Initializes the divider layout.
+		 *	Initializes the divider.
 		 * @param {HTMLElement} domNode divider
 		 * @param {HTMLElement} node1 node to the left or above
 		 * @param {HTMLElement} node2 node to the right or below
@@ -50,30 +50,21 @@ define(['dojo/_base/declare', 'dojo/_base/lang', 'dojo/on'], function(declare, l
 			this.setupEvents();
 		},
 
+		/**
+		 * Setup events
+		 */
 		setupEvents: function() {
 			var self = this;
 
 			on(this.domNode, 'mousedown', function(evt) {
-				var signal,
-					w = parseInt(d.defaultView.getComputedStyle(self.leftNode, '').getPropertyValue('width'), 10);
-
-				self.leftNode.style.width = w + 'px';
-				self.leftNode.style.flex = 'none';
-				self._lastX = evt.pageX;
-
-				evt.preventDefault(); // prevent text selection when dragging
-
-				signal = on(window, 'mousemove', lang.hitch(self, self.drag));
-				self.evtHandlers.push(signal);
-
-				signal = on(window, 'mouseup', lang.hitch(self, self.endDrag));
-				self.evtHandlers.push(signal);
-
-				on.emit(self.domNode, 'divider-dragstart', {
-					bubbles: true,
-					cancelable: true
-				});
+				this.draggable = true;
 			});
+
+			on(this.domNode, 'dragstart', function(evt) {
+				this.draggable = true;
+			});
+
+
 		},
 
 		/**
