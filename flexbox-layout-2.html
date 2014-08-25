@@ -28,6 +28,11 @@ header, footer {
 	background: linear-gradient(to bottom, #ffffff, #eceadc);
 }
 
+[draggable] {
+	user-select: none;
+	cursor: move;
+}
+
 .paneContainer {
 	display: flex;
 	flex: auto;
@@ -60,10 +65,11 @@ header, footer {
 }
 
 .overlay {
+	display: none;	/* element would cover draggable element */
 	transition: all 0.3s ease;
 }
 
-.overlay:hover {
+.overlayActive {
 	box-shadow: inset #6495ed 0 0 0 6px;
 }
 
@@ -115,7 +121,7 @@ header, footer {
 	<div class="overlay overlayBottom"></div>
 	</div>
 
-	<div class="paneDivider overlay" draggable="true"></div>
+	<div class="paneDivider overlay"></div>
 
 	<div class="contentPane">
 	<header></header>
@@ -147,24 +153,8 @@ var dojoConfig = {
 </script>
 <script type="text/javascript" src="/dojo/1.10/dojo/dojo.js"></script>
 <script type="text/javascript">
-require(['dojo/query', 'appLayout/layout/Divider', 'dojo/NodeList-traverse', 'dojo/domReady!'], function(query, Divider) {
-	var i, len, d = document,
-		byId = function(id) {
-			return d.getElementById(id);
-		},
-		nl = document.getElementsByClassName('paneDivider');
-
-	for (i = 0, len = nl.length; i < len; i++) {
-		var divider = new Divider();
-
-		divider.init(nl[i], query(nl[i]).prev()[0], query(nl[i]).next()[0]);
-	}
-
-	// TODO: use dragover to set hover class
-	on(this.domNode, 'dragover', function(evt) {
-					this.draggable = true;
-				});
-
+require(['appLayout/app', 'dojo/domReady!'], function(app) {
+	app.init();
 });
 </script>
 </body>

@@ -17,25 +17,25 @@ define(['dojo/_base/lang', 'dojo/on'
 	init: function(domNode, node1, node2) {
 
 		this.domNode = domNode;
-		this.leftNode = node1;
-		this.rightNode = node2;
+		this.node1 = node1;
+		this.node2 = node2;
 
-		this.setupEvents();
+		this.initEvents();
 	},
 
 	/**
 	 * Setup events
 	 */
-	setupEvents: function() {
+	initEvents: function() {
 		var self = this;
 
 		on(this.domNode, 'mousedown', function(evt) {
 			var signal,
-				w = parseInt(d.defaultView.getComputedStyle(self.leftNode, '').getPropertyValue('width'), 10);
+				w = parseInt(d.defaultView.getComputedStyle(self.node1, '').getPropertyValue('width'), 10);
 
-			self.leftNode.style.width = w + 'px';
-			self.leftNode.style.flex = 'none';
-			self._lastX = evt.pageX;
+			self.node1.style.width = w + 'px';
+			self.node1.style.flex = 'none';
+			self._lastXNode1 = evt.pageX;
 
 			evt.preventDefault(); // prevent text selection when dragging
 

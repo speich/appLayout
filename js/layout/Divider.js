@@ -17,18 +17,21 @@ define(['dojo/_base/declare', 'dojo/_base/lang', 'dojo/on'], function(declare, l
 	 * @class layout.Divider
 	 * @property {String} type vertical or horizontal divider
 	 * @property {HTMLElement} domNode divider container
-	 * @property {HTMLElement} leftNode fixed container
-	 * @property {HTMLElement} rightNode flexible container
+	 * @property {HTMLElement} node1 fixed container
+	 * @property {HTMLElement} node2 flexible container
 	 * @property {String} fixedNodePosition location relative to divider
 	 */
 	return declare(null, /* @lends Splitter.prototype */ {
 
 		type: 'vertical',
-		_lastX: 0,	// store x coordinate of last mouse position
+		_lastX: null,	// store x coordinate of last mouse position
+		_lastY: null,
+		_flexNode1: null,
+		_flexNode2: null,
+
 		domNode: null,
-		leftNode: null,
-		rightNode: null,
-		fixedNodePosition: 'left',
+		node1: null,
+		node2: null,
 
 		constructor: function(params) {
 			lang.mixin(this, params || {});
@@ -42,46 +45,102 @@ define(['dojo/_base/declare', 'dojo/_base/lang', 'dojo/on'], function(declare, l
 		 * @param {HTMLElement} node2 node to the right or below
 		 */
 		init: function(domNode, node1, node2) {
-
 			this.domNode = domNode;
-			this.leftNode = node1;
-			this.rightNode = node2;
+			this.node1 = node1;
+			this.node2 = node2;
 
-			this.setupEvents();
+			this.initNodes();
+			this.initEvents();
 		},
 
 		/**
 		 * Setup events
 		 */
-		setupEvents: function() {
-			var self = this;
+		initEvents: function() {
+			on(this.domNode, 'mousedown', lang.hitch(this, function(evt) {
+				var signal, dragFnc;
 
-			on(this.domNode, 'mousedown', function(evt) {
-				this.draggable = true;
-			});
+				evt.preventDefault(); // prevent text selection when dragging
 
-			on(this.domNode, 'dragstart', function(evt) {
-				this.draggable = true;
-			});
+				if (this.type === 'vertical') {
+					dragFnc = this.dragHorizontal;
+					this._lastX = evt.pageX;
+				}
+				else {
+					dragFnc = this.dragVertical;
+					this._lastY = evt.pageY;
+				}
+
+				this.setNode(this.node1);
+				this.setNode(this.node2);
 
 
+				signal = on(window, 'mousemove', lang.hitch(this, dragFnc));
+				this.evtHandlers.push(signal);
+
+				signal = on(window, 'mouseup', lang.hitch(this, this.endDrag));
+				this.evtHandlers.push(signal);
+
+				on.emit(this.domNode, 'divider-dragstart', {
+					bubbles: true,
+					cancelable: true
+				});
+			}));
+		},
+
+		initNodes: function() {
+			// store original flexbox setting
+			this._flexNode1 = parseInt(d.defaultView.getComputedStyle(this.node1, '').getPropertyValue('flex'), 10);
+			this._flexNode2 = parseInt(d.defaultView.getComputedStyle(this.node2, '').getPropertyValue('flex'), 10);
+		},
+
+		setNode: function(node) {
+			var w, h;
+
+			// set width or height explicitly to make dragging work with flexbox
+			if (this.type === 'vertical') {
+				w = parseInt(d.defaultView.getComputedStyle(node, '').getPropertyValue('width'), 10);
+				node.style.width = w + 'px';
+			}
+			else {
+				h = parseInt(d.defaultView.getComputedStyle(node, '').getPropertyValue('height'), 10);
+				node.style.height = h + 'px';
+			}
+			node.style.flex = 'none';
+		},
+
+		/**
+		 * Sets the widths of the elements when dragging horizontally.
+		 * @param {Event} evt
+		 */
+		dragHorizontal: function(evt) {
+			// we can access the style property directly after setNode, e.g. getComputedStyle is not necessary
+			var wNode1 = parseInt(this.node1.style.width, 10),
+				wNode2 = parseInt(this.node2.style.width, 10);
+
+			wNode1 += evt.pageX - this._lastX;
+			wNode2 -= evt.pageX - this._lastX;
+
+			this.node1.style.width = wNode1 + 'px';
+			this.node2.style.width = wNode2 + 'px';
+			this._lastX = evt.pageX;
 		},
 
 		/**
 		 * Sets the widths of the elements when dragging.
 		 * @param {Event} evt
 		 */
-		drag: function(evt) {
-			var w = parseInt(d.defaultView.getComputedStyle(this.leftNode, '').getPropertyValue('width'), 10);
+		dragVertical: function(evt) {
+			// we can access the style property directly after setNode, e.g. getComputedStyle is not necessary
+			var wNode1 = parseInt(this.node1.style.height, 10),
+				wNode2 = parseInt(this.node2.style.height, 10);
 
-			if (this.fixedNodePosition === 'left') {
-				w += evt.pageX - this._lastX;
-			}
-			else {
-				w -= evt.pageX - this._lastX;
-			}
-			this.leftNode.style.width = w + 'px';
-			this._lastX = evt.pageX;
+			wNode1 += evt.pageY - this._lastY;
+			wNode2 -= evt.pageY - this._lastY;
+
+			this.node1.style.height = wNode1 + 'px';
+			this.node2.style.height = wNode2 + 'px';
+			this._lastY = evt.pageY;
 		},
 
 		/**
@@ -96,6 +155,9 @@ define(['dojo/_base/declare', 'dojo/_base/lang', 'dojo/on'], function(declare, l
 				bubbles: true,
 				cancelable: true
 			});
+
+			this.node1.style.flex = this._flexNode1;
+			this.node1.style.flex = this._flexNode2;
 		}
 	});
 });
