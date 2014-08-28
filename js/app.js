@@ -46,6 +46,7 @@ define([
 					node = this.parentNode;
 
 					//evt.dataTransfer.setDragImage(node, evt.pageX, 10, 10);
+
 					evt.dataTransfer.setData('text/html', node);
 					//evt.dataTransfer.setData('text/plain', 'blabal');
 				});
@@ -68,11 +69,15 @@ define([
 				on(nl[i], 'dragenter', function() {
 					this.classList.add('overlayActive');
 				});
-				on(nl[i], 'dragleave', function() {
-					this.classList.remove('overlayActive');547331376£TOHE.tohe3331811bvbxxx
-
-					evt.preventDefault();   // necessary to allow dropping
+				on(nl[i], 'dragover', function(evt) {
+					evt.preventDefault();   // necessary to allow dropping, otherwise
+					//evt.dataTransfer.dropEffect = 'move';
 					return false;
+				});
+
+				on(nl[i], 'dragleave', function(evt) {
+					this.classList.remove('overlayActive');
+
 				});
 
 				on(nl[i], 'drop', function(evt) {
