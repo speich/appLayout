@@ -100,10 +100,15 @@ header, footer {
 
 /* new in step 2 */
 .paneDivider {
+	display: flex;
 	flex: none;
 	min-width: 6px;
 	width: 6px;
 	cursor: col-resize;
+}
+
+.paneDivider .overlay {
+	flex: auto;
 }
 
 </style>
@@ -121,7 +126,7 @@ header, footer {
 	<div class="overlay overlayBottom"></div>
 	</div>
 
-	<div class="paneDivider overlay"></div>
+	<div class="paneDivider"><div class="overlay"></div></div>
 
 	<div class="contentPane">
 	<header></header>
@@ -131,7 +136,7 @@ header, footer {
 	<div class="overlay overlayBottom"></div>
 	</div>
 
-	<div class="paneDivider overlay"></div>
+	<div class="paneDivider"><div class="overlay"></div></div>
 
 	<div class="contentPane">
 	<header></header>

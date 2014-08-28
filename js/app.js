@@ -74,12 +74,9 @@ define([
 					//evt.dataTransfer.dropEffect = 'move';
 					return false;
 				});
-
 				on(nl[i], 'dragleave', function(evt) {
 					this.classList.remove('overlayActive');
-
 				});
-
 				on(nl[i], 'drop', function(evt) {
 					evt.preventDefault();
 				});
