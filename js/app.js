@@ -2,8 +2,9 @@ define([
 	'dojo/on',
 	'dojo/query',
 	'appLayout/layout/Divider',
+	'appLayout/layout/overlayFactory',
 	'dojo/NodeList-traverse'
-], function(on, query, Divider) {
+], function(on, query, Divider, overlayFactory) {
 	'use strict';
 
 	var d = document,
@@ -20,15 +21,9 @@ define([
 		},
 
 		initLayout: function() {
-			var i, len,
-				nl = d.getElementsByClassName('paneDivider');
+			var i, nl, len;
 
-			// init dividers
-			for (i = 0, len = nl.length; i < len; i++) {
-				var divider = new Divider();
-
-				divider.init(nl[i], query(nl[i]).prev()[0], query(nl[i]).next()[0]);
-			}
+			this.initDividers();
 
 			// init pane dnd
 			nl = d.querySelectorAll('.contentPane header');
@@ -37,10 +32,10 @@ define([
 
 				on(nl[i], 'dragstart', function(evt) {
 					var i, len, node,
-						nl = d.getElementsByClassName('overlay');
+						nl = d.getElementsByClassName('overlayContainer');
 
 					for (i = 0, len = nl.length; i < len; i++) {
-						nl[i].style.display = 'block';
+						nl[i].style.pointerEvents = 'auto';
 					}
 
 					node = this.parentNode;
@@ -51,13 +46,32 @@ define([
 					//evt.dataTransfer.setData('text/plain', 'blabal');
 				});
 
-				on(nl[i], 'dragend', function(evt) {
-					var i, len, nl = d.getElementsByClassName('overlay');
+				on(nl[i], 'dragend', function() {
+					var i, len, nl = d.getElementsByClassName('overlayContainer');
 					for (i = 0, len = nl.length; i < len; i++) {
-						nl[i].classList.remove('overlayActive');
-						nl[i].style.display = 'none';
+					//	nl[i].classList.remove('overlayActive');
+						nl[i].style.pointerEvents = 'none';
 					}
 				});
+			}
+		},
+
+		initPanes: function() {
+
+		},
+
+
+		initDividers: function() {
+			var i, len,
+				nl = d.getElementsByClassName('paneDivider');
+
+			// init dividers
+			for (i = 0, len = nl.length; i < len; i++) {
+				var divider = new Divider({
+					type: nl[i].classList.contains('rowDivider') ? 'horizontal' : 'vertical'
+				});
+
+				divider.init(nl[i], query(nl[i]).prev()[0], query(nl[i]).next()[0]);
 			}
 		},
 
@@ -66,20 +80,7 @@ define([
 				nl = d.getElementsByClassName('overlay');
 
 			for (i = 0, len = nl.length; i < len; i++) {
-				on(nl[i], 'dragenter', function() {
-					this.classList.add('overlayActive');
-				});
-				on(nl[i], 'dragover', function(evt) {
-					evt.preventDefault();   // necessary to allow dropping, otherwise
-					//evt.dataTransfer.dropEffect = 'move';
-					return false;
-				});
-				on(nl[i], 'dragleave', function(evt) {
-					this.classList.remove('overlayActive');
-				});
-				on(nl[i], 'drop', function(evt) {
-					evt.preventDefault();
-				});
+				overlayFactory.initAllowDropping(nl[i]);
 			}
 		}
 	};

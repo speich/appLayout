@@ -2,7 +2,6 @@
  * This file contains a the class to create a draggable divider.
  * @module layout/Divider
  * @see layout.Divider
- * TODO: implement horizontal type
  */
 define(['dojo/_base/declare', 'dojo/_base/lang', 'dojo/on'], function(declare, lang, on) {
 	'use strict';
@@ -21,7 +20,7 @@ define(['dojo/_base/declare', 'dojo/_base/lang', 'dojo/on'], function(declare, l
 	 * @property {HTMLElement} node2 flexible container
 	 * @property {String} fixedNodePosition location relative to divider
 	 */
-	return declare(null, /* @lends Splitter.prototype */ {
+	return declare(null, /* @lends Divider.prototype */ {
 
 		type: 'vertical',
 		_lastX: null,	// store x coordinate of last mouse position

@@ -20,7 +20,6 @@ header, main, footer {
 
 main {
 	display: flex;
-	flex-direction: row;
 	flex: auto;
 }
 
@@ -64,47 +63,51 @@ header, footer {
 	flex: auto;
 }
 
+.overlayContainer {
+	display: flex;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	pointer-events: none;
+}
+
 .overlay {
-	display: none;	/* element would cover draggable element */
 	transition: all 0.3s ease;
 }
 
-.overlayActive {
+.overlayEdge {
+	min-height: 6px;
+	min-width: 6px;
+	flex: none;
+}
+
+.overlayMiddle {
+	flex: auto;
+}
+
+.overlay:hover {
 	box-shadow: inset #6495ed 0 0 0 6px;
 }
 
-.contentPane .overlay {
-	position: absolute;
-}
-
-.contentPane .overlayTop {
-	top: 0;
-	left: 0;
-	height: 6px;
-	right: 0;
-}
-
-.contentPane .overlayMiddle {
-	top: 6px;
-	left: 0;
-	bottom: 6px;
-	right: 0;
-}
-
-.contentPane .overlayBottom {
-	height: 6px;
-	left: 0;
-	bottom: 0;
-	right: 0;
-}
-
 /* new in step 2 */
-.paneDivider {
-	display: flex;
-	flex: none;
+.rowDivider {
+	min-height: 6px;
+	height: 6px;
+	cursor: row-resize;
+}
+
+.colDidiver {
 	min-width: 6px;
 	width: 6px;
 	cursor: col-resize;
+}
+
+.paneDivider {
+	display: flex;
+	flex: none;
+	position: relative;
 }
 
 .paneDivider .overlay {
@@ -116,36 +119,71 @@ header, footer {
 
 <body class="appLayout">
 <header>header</header>
-<main>
-	<div class="paneContainer colContainer">
+<main class="rowContainer">
+<div class="paneContainer rowContainer">
 	<div class="contentPane">
-	<header></header>
-	<section></section>
-	<div class="overlay overlayTop"></div>
-	<div class="overlay overlayMiddle"></div>
-	<div class="overlay overlayBottom"></div>
+		<header></header>
+		<section></section>
+		<div class="overlayContainer colContainer">
+			<div class="overlay overlayEdge"></div>
+			<div class="overlay overlayMiddle"></div>
+			<div class="overlay overlayEdge"></div>
 	</div>
 
-	<div class="paneDivider"><div class="overlay"></div></div>
+</div>
+
+	<div class="paneDivider rowDivider"><div class="overlayContainer rowContainer"><div class="overlay overlayEdge"></div></div></div>
+
+
+<div class="paneContainer colContainer">
+
+	<div class="paneContainer rowContainer">
+		<div class="contentPane">
+			<header></header>
+			<section></section>
+			<div class="overlayContainer colContainer">
+			<div class="overlay overlayEdge"></div>
+			<div class="overlay overlayMiddle"></div><div class="overlay overlayEdge"></div>
+			</div>
+		</div>
+
+		<div class="paneDivider rowDivider"><div class="overlayContainer rowContainer"><div class="overlay overlayEdge"></div></div></div>
+
+		<div class="contentPane">
+			<header></header>
+			<section></section>
+			<div class="overlayContainer rowContainer">
+			<div class="overlay overlayEdge"></div>
+			<div class="overlay overlayMiddle"></div>
+			<div class="overlay overlayEdge"></div>
+			</div>
+		</div>
+	</div>
+
+	<div class="paneDivider colDidiver"><div class="overlayContainer rowContainer"><div class="overlay overlayEdge"></div></div></div>
 
 	<div class="contentPane">
-	<header></header>
-	<section></section>
-	<div class="overlay overlayTop"></div>
-	<div class="overlay overlayMiddle"></div>
-	<div class="overlay overlayBottom"></div>
+		<header></header>
+		<section></section>
+		<div class="overlayContainer rowContainer">
+			<div class="overlay overlayEdge"></div>
+			<div class="overlay overlayMiddle"></div>
+			<div class="overlay overlayEdge"></div>
+		</div>
 	</div>
 
-	<div class="paneDivider"><div class="overlay"></div></div>
+	<div class="paneDivider colDidiver"><div class="overlay"></div></div>
 
 	<div class="contentPane">
-	<header></header>
-	<section></section>
-	<div class="overlay overlayTop"></div>
-	<div class="overlay overlayMiddle"></div>
-	<div class="overlay overlayBottom"></div>
+		<header></header>
+		<section></section>
+		<div class="overlayContainer rowContainer">
+			<div class="overlay overlayEdge"></div>
+			<div class="overlay overlayMiddle"></div>
+			<div class="overlay overlayEdge"></div>
+		</div>
 	</div>
-	</div>
+</div>
 </main>
 <footer>footer</footer>
 <script type="text/javascript">

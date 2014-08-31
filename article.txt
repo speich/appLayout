@@ -23,3 +23,15 @@ show bow-shadow transition only after start of drag by adding the corresponding 
 
 2.
 In the next step we add the vertical separators, which later will allow the user to resize the contentPanes, they also serve as a dropping target
+
+
+-split column into two rows and add a row divider
+- use event delegation, which is convenient when creating a new pane, since you do not have to call initEvents again to attach event to new pane :-)
+
+
+- put overlay into its own container, which lets us use flexbox too, so the middle overlay always has the right hight or width, independent of the existence of an overly top or bottom (left/right)
+- which type of overlay (middleTopBottom, middleTop, middleBottom, middle, middleLeftRight, middleLeft, middleRight) is created, depends on how many siblings there are and if we are first or last or only contentPane
+
+
+-to keep things simple and to not let the user loos oversight, column containers can only be split into rows, and row containers only into columns. this allows us to only have to types of overlays:
+overlayMiddle and overlayEdge. in a colContainer (flex-direction row) the overlayEdge aligns horizontal, in a rowContainer it allows vertical, the middle uses up the remaining space.
