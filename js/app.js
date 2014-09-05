@@ -67,11 +67,14 @@ define([
 
 			// init dividers
 			for (i = 0, len = nl.length; i < len; i++) {
-				var divider = new Divider({
-					type: nl[i].classList.contains('rowDivider') ? 'horizontal' : 'vertical'
-				});
+				var nextNode, prevNode,
+					divider = new Divider({
+						type: (nl[i].classList.contains('rowDivider') ? 'horizontal' : 'vertical')
+					});
 
-				divider.init(nl[i], query(nl[i]).prev()[0], query(nl[i]).next()[0]);
+				prevNode = query(nl[i]).prev()[0];
+				nextNode = query(nl[i]).next()[0];
+				divider.init(nl[i], prevNode, nextNode);
 			}
 		},
 

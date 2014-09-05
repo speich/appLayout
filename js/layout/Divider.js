@@ -105,6 +105,7 @@ define(['dojo/_base/declare', 'dojo/_base/lang', 'dojo/on'], function(declare, l
 				h = parseInt(d.defaultView.getComputedStyle(node, '').getPropertyValue('height'), 10);
 				node.style.height = h + 'px';
 			}
+
 			node.style.flex = 'none';
 		},
 
@@ -113,7 +114,7 @@ define(['dojo/_base/declare', 'dojo/_base/lang', 'dojo/on'], function(declare, l
 		 * @param {Event} evt
 		 */
 		dragHorizontal: function(evt) {
-			// we can access the style property directly after setNode, e.g. getComputedStyle is not necessary
+			// we can access the style property directly after setNode, e.g. getComputedStyle is no longer necessary
 			var wNode1 = parseInt(this.node1.style.width, 10),
 				wNode2 = parseInt(this.node2.style.width, 10);
 
@@ -130,7 +131,7 @@ define(['dojo/_base/declare', 'dojo/_base/lang', 'dojo/on'], function(declare, l
 		 * @param {Event} evt
 		 */
 		dragVertical: function(evt) {
-			// we can access the style property directly after setNode, e.g. getComputedStyle is not necessary
+			// we can access the style property directly after setNode, e.g. getComputedStyle is no longer necessary
 			var wNode1 = parseInt(this.node1.style.height, 10),
 				wNode2 = parseInt(this.node2.style.height, 10);
 
