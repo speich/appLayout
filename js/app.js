@@ -58,7 +58,20 @@ define([
 			}
 
 			on(d.getElementsByTagName('main')[0], '.overlayContainer:drop', function(evt) {
-				console.log('dropped on', evt.target, this);
+				var contentPane = this.parentNode,
+					cl = evt.target.classList;
+
+				if (cl.contains('overlayMiddle')) {
+					// add to tabs
+					console.log('add new tab to ', contentPane);
+				}
+				else if (cl.contains('overlayEdge')) {
+					// add new container (where? top left bottom right?)
+					// -> convert contentPane to paneContainer and add old and new panes to it
+					console.log('add new container to', contentPane);
+				}
+
+				// TODO: dropping on paneDivider
 			});
 
 		},
