@@ -48,6 +48,7 @@ define(['dojo/on' /*, 'appLayout/stringUtil' */], function(on, stringUtil) {
 				this.classList.remove('overlayActive');
 			});
 			overlay.addEventListener('drop', function (evt) {
+				this.classList.remove('overlayActive');
 				evt.preventDefault();
 			});
 		}
