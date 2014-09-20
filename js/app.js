@@ -26,7 +26,7 @@ define([
 			this.initDividers();
 
 			// init pane dnd
-			nl = d.querySelectorAll('.contentPane header');
+			nl = d.querySelectorAll('.tabs li');
 			for (i = 0, len = nl.length; i < len; i++) {
 				nl[i].setAttribute('draggable', true);
 

@@ -12,10 +12,12 @@ body {
 	margin: 0;
 	display: flex;
 	flex-direction: column;
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 1em;
 }
 
-header, main, footer {
-	border: 1px solid black;
+header {
+	border: 1px solid #cccccc;
 }
 
 main {
@@ -54,7 +56,7 @@ header, footer {
 }
 
 .contentPane header {
-	height: 2em;
+	height: 1.2em;
 	border-width: 0 0 1px 0;
 	background: linear-gradient(to bottom, #ffffff, #eceadc);
 }
@@ -73,7 +75,7 @@ header, footer {
 }
 
 .noPointerEvents {
-	pointer-events: none;	/* allow responding to dragging of container below */
+	pointer-events: none;	/* allow dragging of container below overlays */
 }
 
 .overlay {
@@ -90,7 +92,7 @@ header, footer {
 	flex: auto;
 }
 
-.overlay:hover {
+.overlayActive {
 	box-shadow: inset #6495ed 0 0 0 6px;
 }
 
@@ -117,6 +119,27 @@ header, footer {
 	flex: auto;
 }
 
+.tabs {
+	margin: 0;
+	padding: 0;
+	display: flex;
+	justify-content: flex-start;
+	align-items: flex-end;
+	height: 100%;
+	overflow: hidden;
+}
+
+.tabs li {
+	display: inline;
+	list-style: none;
+	font-size: 0.7em;
+	padding: 0 0.5em;
+	border-right: 1px solid #cccccc;
+}
+
+.tabs li.active {
+	background-color: #ffffff;
+}
 </style>
 </head>
 
@@ -125,7 +148,7 @@ header, footer {
 <main class="rowContainer">
 <div class="paneContainer rowContainer">
 	<div class="contentPane">
-		<header></header>
+		<header><ul class="tabs"><li>Preview</li></ul></header>
 		<section></section>
 		<div class="overlayContainer colContainer noPointerEvents">
 			<div class="overlay overlayEdge"></div>
@@ -137,11 +160,11 @@ header, footer {
 
 <div class="paneDivider rowDivider"><div class="overlayContainer rowContainer noPointerEvents"><div class="overlay overlayEdge"></div></div></div>
 
-<div class="paneContainer colContainer">
+<div id="test" class="paneContainer colContainer">
 
 	<div class="paneContainer rowContainer">
 		<div class="contentPane">
-			<header></header>
+			<header><ul class="tabs"><li class="active">Content</li><li>Folders</li><li>Keywords</li></ul></header>
 			<section></section>
 			<div class="overlayContainer colContainer noPointerEvents">
 				<div class="overlay overlayEdge"></div>
@@ -153,7 +176,7 @@ header, footer {
 		<div class="paneDivider rowDivider"><div class="overlayContainer rowContainer noPointerEvents"><div class="overlay overlayEdge"></div></div></div>
 
 		<div class="contentPane">
-			<header></header>
+			<header><ul class="tabs"><li>Collections</li></ul></header>
 			<section></section>
 			<div class="overlayContainer colContainer noPointerEvents">
 				<div class="overlay overlayEdge"></div>
@@ -166,7 +189,7 @@ header, footer {
 	<div class="paneDivider colDivider"><div class="overlayContainer colContainer noPointerEvents"><div class="overlay overlayEdge"></div></div></div>
 
 	<div class="contentPane">
-		<header></header>
+		<header><ul class="tabs"><li>Map</li></ul></header>
 		<section></section>
 		<div class="overlayContainer rowContainer noPointerEvents">
 			<div class="overlay overlayEdge"></div>
@@ -178,7 +201,7 @@ header, footer {
 	<div class="paneDivider colDivider"><div class="overlayContainer colContainer noPointerEvents"><div class="overlay overlayEdge"></div></div></div>
 
 	<div class="contentPane">
-		<header></header>
+		<header><ul class="tabs"><li>Filter</li></ul></header>
 		<section></section>
 		<div class="overlayContainer rowContainer noPointerEvents">
 			<div class="overlay overlayEdge"></div>
