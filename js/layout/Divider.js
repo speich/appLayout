@@ -2,8 +2,14 @@
  * This file contains a the class to create a draggable divider.
  * @module layout/Divider
  * @see layout.Divider
+ * TODO: implement horizontal type
  */
-define(['dojo/_base/declare', 'dojo/_base/lang', 'dojo/on'], function(declare, lang, on) {
+define([
+	'dojo/_base/declare',
+	'dojo/_base/lang',
+	'dojo/on',
+	'dojo/query'
+], function(declare, lang, on, query) {
 	'use strict';
 
 	var d = document;
@@ -16,21 +22,16 @@ define(['dojo/_base/declare', 'dojo/_base/lang', 'dojo/on'], function(declare, l
 	 * @class layout.Divider
 	 * @property {String} type vertical or horizontal divider
 	 * @property {HTMLElement} domNode divider container
-	 * @property {HTMLElement} node1 fixed container
-	 * @property {HTMLElement} node2 flexible container
-	 * @property {String} fixedNodePosition location relative to divider
+	 * @property {NodeList} siblings to resize
 	 */
 	return declare(null, /* @lends Divider.prototype */ {
 
 		type: 'vertical',
 		_lastX: null,	// store x coordinate of last mouse position
 		_lastY: null,
-		_flexNode1: null,
-		_flexNode2: null,
 
 		domNode: null,
-		node1: null,
-		node2: null,
+		siblings: null,
 
 		constructor: function(params) {
 			lang.mixin(this, params || {});
@@ -38,17 +39,17 @@ define(['dojo/_base/declare', 'dojo/_base/lang', 'dojo/on'], function(declare, l
 		},
 
 		/**
-		 *	Initializes the divider.
+		 * Initializes the divider.
 		 * @param {HTMLElement} domNode divider
-		 * @param {HTMLElement} node1 node to the left or above
-		 * @param {HTMLElement} node2 node to the right or below
+		 * @param node2
+		 * @param node1
 		 */
 		init: function(domNode, node1, node2) {
 			this.domNode = domNode;
 			this.node1 = node1;
 			this.node2 = node2;
+			this.siblings = query('> .contentPane, > .paneContainer', domNode.parentNode);
 
-			this.initNodes();
 			this.initEvents();
 		},
 
@@ -70,9 +71,7 @@ define(['dojo/_base/declare', 'dojo/_base/lang', 'dojo/on'], function(declare, l
 					this._lastY = evt.pageY;
 				}
 
-				this.setNode(this.node1);
-				this.setNode(this.node2);
-
+				this.setNodes();
 
 				signal = on(window, 'mousemove', lang.hitch(this, dragFnc));
 				this.evtHandlers.push(signal);
@@ -87,26 +86,36 @@ define(['dojo/_base/declare', 'dojo/_base/lang', 'dojo/on'], function(declare, l
 			}));
 		},
 
-		initNodes: function() {
-			// store original flexbox setting
-			this._flexNode1 = parseInt(d.defaultView.getComputedStyle(this.node1, '').getPropertyValue('flex'), 10);
-			this._flexNode2 = parseInt(d.defaultView.getComputedStyle(this.node2, '').getPropertyValue('flex'), 10);
+		/**
+		 * Set width or height of nodes explicitly.
+		 * Set the css width or height of all parent containers explicitly to make dragging (resizing containers)
+		 * work with flexbox layout.
+		 */
+		setNodes: function() {
+			var i, len, nl = this.siblings,
+				values = [],
+				style = this.type === 'vertical' ? 'width' : 'height';
+
+			// important: split reading and setting into two separate loops to make dragging work with flexbox layout
+			for(i = 0, len = nl.length; i < len; i++) {
+				values.push(this.getCssComputed(nl[i], style));
+			}
+
+			// write only after reading
+			for(i = 0, len = nl.length; i < len; i++) {
+				nl[i].style[style] = values[i] + 'px';
+			}
 		},
 
-		setNode: function(node) {
-			var w, h;
-
-			// set width or height explicitly to make dragging work with flexbox
-			if (this.type === 'vertical') {
-				w = parseInt(d.defaultView.getComputedStyle(node, '').getPropertyValue('width'), 10);
-				node.style.width = w + 'px';
-			}
-			else {
-				h = parseInt(d.defaultView.getComputedStyle(node, '').getPropertyValue('height'), 10);
-				node.style.height = h + 'px';
-			}
-
-			node.style.flex = 'none';
+		/**
+		 * Return value of computed css property.
+		 * @param {HTMLElement} node
+		 * @param {string} value
+		 * @returns {number} integer
+		 */
+		getCssComputed: function(node, value) {
+			var val = d.defaultView.getComputedStyle(node, '').getPropertyValue(value);
+			return Math.round(parseInt(val, 10));
 		},
 
 		/**
@@ -115,31 +124,33 @@ define(['dojo/_base/declare', 'dojo/_base/lang', 'dojo/on'], function(declare, l
 		 */
 		dragHorizontal: function(evt) {
 			// we can access the style property directly after setNode, e.g. getComputedStyle is no longer necessary
-			var wNode1 = parseInt(this.node1.style.width, 10),
-				wNode2 = parseInt(this.node2.style.width, 10);
+			var w1 = parseInt(this.node1.style.width, 10),
+				w2 = parseInt(this.node2.style.width, 10);
 
-			wNode1 += evt.pageX - this._lastX;
-			wNode2 -= evt.pageX - this._lastX;
+			w1 += evt.pageX - this._lastX;
+			w2 -= evt.pageX - this._lastX;
 
-			this.node1.style.width = wNode1 + 'px';
-			this.node2.style.width = wNode2 + 'px';
+			this.node1.style.width = w1 + 'px';
+			this.node2.style.width = w2 + 'px';
+
 			this._lastX = evt.pageX;
 		},
 
 		/**
-		 * Sets the widths of the elements when dragging.
+		 * Sets the heights of the elements when dragging vertically.
 		 * @param {Event} evt
 		 */
 		dragVertical: function(evt) {
 			// we can access the style property directly after setNode, e.g. getComputedStyle is no longer necessary
-			var wNode1 = parseInt(this.node1.style.height, 10),
-				wNode2 = parseInt(this.node2.style.height, 10);
+			var h1 = parseInt(this.node1.style.height, 10),
+				h2 = parseInt(this.node2.style.height, 10);
 
-			wNode1 += evt.pageY - this._lastY;
-			wNode2 -= evt.pageY - this._lastY;
+			h1 += evt.pageY - this._lastY;
+			h2 -= evt.pageY - this._lastY;
 
-			this.node1.style.height = wNode1 + 'px';
-			this.node2.style.height = wNode2 + 'px';
+			this.node1.style.height = h1 + 'px';
+			this.node2.style.height = h2 + 'px';
+
 			this._lastY = evt.pageY;
 		},
 
@@ -155,9 +166,6 @@ define(['dojo/_base/declare', 'dojo/_base/lang', 'dojo/on'], function(declare, l
 				bubbles: true,
 				cancelable: true
 			});
-
-			this.node1.style.flex = this._flexNode1;
-			this.node1.style.flex = this._flexNode2;
 		}
 	});
 });
