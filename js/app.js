@@ -35,7 +35,8 @@ define([
 						nl = d.getElementsByClassName('overlayContainer');
 
 					for (i = 0, len = nl.length; i < len; i++) {
-						nl[i].style.pointerEvents = 'auto';
+						nl[i].classList.remove('noPointerEvents');
+						//nl[i].style.pointerEvents = 'auto';
 					}
 
 					node = this.parentNode;
@@ -50,10 +51,16 @@ define([
 					var i, len, nl = d.getElementsByClassName('overlayContainer');
 					for (i = 0, len = nl.length; i < len; i++) {
 					//	nl[i].classList.remove('overlayActive');
-						nl[i].style.pointerEvents = 'none';
+						nl[i].classList.add('noPointerEvents');
+						//nl[i].style.pointerEvents = 'none';
 					}
 				});
 			}
+
+			on(d.getElementsByTagName('main')[0], '.overlayContainer:drop', function(evt) {
+				console.log('dropped on', evt.target, this);
+			});
+
 		},
 
 		initPanes: function() {
@@ -69,7 +76,7 @@ define([
 			for (i = 0, len = nl.length; i < len; i++) {
 				var nextNode, prevNode,
 					divider = new Divider({
-						type: (nl[i].classList.contains('rowDivider') ? 'horizontal' : 'vertical')
+						type: nl[i].classList.contains('rowDivider') ? 'horizontal' : 'vertical'
 					});
 
 				prevNode = query(nl[i]).prev()[0];
