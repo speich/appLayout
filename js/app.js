@@ -1,10 +1,11 @@
 define([
+	'dojo/_base/lang',
 	'dojo/on',
 	'dojo/query',
 	'appLayout/layout/Divider',
 	'appLayout/layout/overlayFactory',
 	'dojo/NodeList-traverse'
-], function(on, query, Divider, overlayFactory) {
+], function(lang, on, query, Divider, overlayFactory) {
 	'use strict';
 
 	var d = document,
@@ -16,70 +17,78 @@ define([
 	return {
 
 		init: function() {
-			this.initLayout();
 			this.initEvents();
+			this.initDividers();
+			this.initDnd();
 		},
 
-		initLayout: function() {
+		initDnd: function() {
 			var i, nl, len;
 
-			this.initDividers();
-
-			// init pane dnd
 			nl = d.querySelectorAll('.tabs li');
 			for (i = 0, len = nl.length; i < len; i++) {
 				nl[i].setAttribute('draggable', true);
 
-				on(nl[i], 'dragstart', function(evt) {
-					var i, len, node,
-						nl = d.getElementsByClassName('overlayContainer');
 
+				on(nl[i], 'dragstart', function(evt) {
+					var i, len, node, nl;
+
+					// enable receiving mouse events on overlays to show where we can drop
+					// note: overlays are set not to receive pointer events, otherwise we could not drag a tab, because they
+					nl = d.getElementsByClassName('overlayContainer');
 					for (i = 0, len = nl.length; i < len; i++) {
 						nl[i].classList.remove('noPointerEvents');
-						//nl[i].style.pointerEvents = 'auto';
 					}
 
 					node = this.parentNode;
-
-					//evt.dataTransfer.setDragImage(node, evt.pageX, 10, 10);
-
 					evt.dataTransfer.setData('text/html', node);
-					//evt.dataTransfer.setData('text/plain', 'blabal');
+					evt.dataTransfer.effectAllowed = 'move';
 				});
 
+				// disable receiving mouse events on overlays, otherwise we could not drag a tab
 				on(nl[i], 'dragend', function() {
 					var i, len, nl = d.getElementsByClassName('overlayContainer');
+
 					for (i = 0, len = nl.length; i < len; i++) {
-					//	nl[i].classList.remove('overlayActive');
 						nl[i].classList.add('noPointerEvents');
-						//nl[i].style.pointerEvents = 'none';
 					}
 				});
 			}
 
-			on(d.getElementsByTagName('main')[0], '.overlayContainer:drop', function(evt) {
-				var contentPane = this.parentNode,
-					cl = evt.target.classList;
+			on(d.getElementsByTagName('main')[0], '.overlayContainer:drop', lang.hitch(this, this.drop));
+		},
 
-				if (cl.contains('overlayMiddle')) {
-					// add to tabs
-					console.log('add new tab to ', contentPane);
+		drop: function(evt) {
+			var cpSource = this.parentNode,
+				overlay = evt.target,
+				cl = overlay.classList,
+				overlayContainer = query(overlay).parents('.overlayContainer')[0],
+				targetContainer = query(overlayContainer).parents('.contentPane, .paneDivider')[0],
+				isDivider = targetContainer.classList.contains('paneDivider'),
+				flexDir, tabOrder, tabNav;
+
+			if (cl.contains('overlayMiddle')) {
+				// add to tabs
+				tabNav = targetContainer.getElementsByClassName('tabs')[0];
+				console.log(tabNav);
+			}
+			else if (cl.contains('overlayEdge')) {
+				flexDir = d.defaultView.getComputedStyle(overlayContainer, '').getPropertyValue('flex-direction');
+				tabOrder = d.defaultView.getComputedStyle(overlay, '').getPropertyValue('order');
+				console.log(flexDir, overlay, tabOrder);
+				if (isDivider) {
+					// dropping on divider
 				}
-				else if (cl.contains('overlayEdge')) {
+				else {
 					// add new container (where? top left bottom right?)
+					// use css order property together with flex-direction to find which edge we dropped on
 					// -> convert contentPane to paneContainer and add old and new panes to it
-					console.log('add new container to', contentPane);
+
 				}
-
-				// TODO: dropping on paneDivider
-			});
-
+			}
 		},
 
-		initPanes: function() {
-
-		},
-
+		initPanes: function() {},
 
 		initDividers: function() {
 			var i, len,
@@ -103,7 +112,7 @@ define([
 				nl = d.getElementsByClassName('overlay');
 
 			for (i = 0, len = nl.length; i < len; i++) {
-				overlayFactory.initAllowDropping(nl[i]);
+				overlayFactory.initDnd(nl[i]);
 			}
 		}
 	};

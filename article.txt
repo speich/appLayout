@@ -59,3 +59,5 @@ problem when setting the height/width of the node paires left - right or top - b
 
 
 dnd splitting/overlay rules: show vertical overlays in horizontal and vice versa
+
+note: having the overlays as the first children of a contentPane and the sections as the last, lets us just append a new child section when dropping

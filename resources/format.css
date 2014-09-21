@@ -134,3 +134,7 @@ header, footer {
 .tabs li.active {
 	background-color: #ffffff;
 }
+
+.displayNone {
+	display: none;
+}

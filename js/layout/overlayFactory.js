@@ -4,7 +4,7 @@
  * @module layout/overlayFactory
  * @see layout.overlayFactory
  */
-define(['dojo/on' /*, 'appLayout/stringUtil' */], function(on, stringUtil) {
+define(['dojo/on', 'appLayout/stringUtil'], function(on, stringUtil) {
 	'use strict';
 
 	/**
@@ -13,35 +13,28 @@ define(['dojo/on' /*, 'appLayout/stringUtil' */], function(on, stringUtil) {
 	 */
 	return {
 
-		type: 'middleTopBottom',
-		types: ['middle', 'top', 'bottom', 'left', 'right'],
+		types: ['middle', 'edge'],
 
 		create: function (el, type) {
-			//var matches = this.types.match(type || this.type);
-			var matches = ['Middle', 'Top', 'Bottom'];
+			var div = document.createElement('div');
 
-			matches.forEach(function (type) {
-				var div = document.createElement('div');
+			div.classList.add('overlay', 'overlay' + stringUtil.ucfirst(type));
 
-				//div.classList.add('overlay', 'overlay' + stringUtil.ucfirst(type));
-				div.classList.add('overlay', type);
-				el.appendChild(div);
-				this.initAllowDropping(div);
-			});
+			el.appendChild(div);
+			this.initDnd(div);
 		},
 
 		/**
 		 * Add allow dropping to overlay.
 		 * @param {HTMLElement} overlay
 		 */
-		initAllowDropping: function (overlay) {
-			// TODO: use event delegation on contentPane instead of attaching to each overlyy?
+		initDnd: function (overlay) {
+			// TODO: use event delegation on contentPane instead of attaching to each overlay?
 			overlay.addEventListener('dragenter', function () {
 				this.classList.add('overlayActive');
 			});
 			overlay.addEventListener('dragover', function (evt) {
-				evt.preventDefault();   // necessary to allow dropping, otherwise
-				//evt.dataTransfer.dropEffect = 'move';
+				evt.preventDefault();   // necessary to allow dropping
 				return false;
 			});
 			overlay.addEventListener('dragleave', function () {
