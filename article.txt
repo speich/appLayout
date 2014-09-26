@@ -39,12 +39,16 @@ In the next step we add the vertical separators, which later will allow the user
 
 -to keep things simple and to not let the user loos oversight, column containers can only be split into rows, and row containers only into columns. this allows us to only have to types of overlays:
 overlayMiddle and overlayEdge. in a colContainer (flex-direction row) the overlayEdge aligns horizontal, in a rowContainer it allows vertical, the middle uses up the remaining space.
+overlays: unfortunately it is not possible to use thcl = overlay.classList,e computed order property of a flex item, since that is always the default of 0. so either we have to set the order property explicitly, or use a more types of overlay classes. Instead of middle and edge, it will be left, top bottom right and middle
+or we could rely on document order (tree order) of child elements.
+
+
 
 css class purposes:
 overlayContainer: place overlays middle left top right bottom according to flexbox direction
 
 
-flexbox has the advantage that the browser takes care of resizing all the containers for you. This is especially usful
+flexbox has the advantage that the browser takes care of resizing all the containers for you. This is especially useful
 in case of nested containers, since you would have to calculate width/heights for all these at hte time of dragging
 
 
@@ -61,3 +65,15 @@ problem when setting the height/width of the node paires left - right or top - b
 dnd splitting/overlay rules: show vertical overlays in horizontal and vice versa
 
 note: having the overlays as the first children of a contentPane and the sections as the last, lets us just append a new child section when dropping
+
+
+now onto the hardest part. Handling the dropping.
+Lets first deal with dropping on a divider.
+
+when inserting new cp, we could just append as last child and then use the flexbox order property to have the browser display it at the right position, or we could maintain document order (screenreaders, etc) and insert it at the correct position.
+
+
+
+we are not implementing all edge cases such as dragging and dropping last cp (e.g. tablist had only one tab). The oder property makes reordering very easy, not really since we have to reorder all cps after the current.
+If we used inserting at the right dom, we do not have to reorder at all. browser takes care of that and as bonus document order is always right.
+But how do we make these changes permanent, e.g. after browser reload/restart we cant the same layout back. -> save complete dom to indexedDB.
