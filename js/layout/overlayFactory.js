@@ -29,7 +29,6 @@ define(['dojo/on', 'appLayout/stringUtil'], function(on, stringUtil) {
 		 * @param {HTMLElement} overlay
 		 */
 		initDnd: function (overlay) {
-			// TODO: use event delegation on contentPane instead of attaching to each overlay?
 			overlay.addEventListener('dragenter', function () {
 				this.classList.add('overlayActive');
 			});

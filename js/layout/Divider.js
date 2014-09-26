@@ -2,7 +2,6 @@
  * This file contains a the class to create a draggable divider.
  * @module layout/Divider
  * @see layout.Divider
- * TODO: implement horizontal type
  */
 define([
 	'dojo/_base/declare',
