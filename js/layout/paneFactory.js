@@ -7,28 +7,39 @@ define(['dojo/_base/declare', 'appLayout/layout/overlayFactory'], function(decla
 		className: 'contentPane',
 		type: '',
 
-		create: function() {
-			/*
-			 <div class="contentPane">
-			 <header></header>
-			 <section></section>
-			 <div class="overlay overlayTop"></div>
-			 <div class="overlay overlayMiddle"></div>
-			 <div class="overlay overlayBottom"></div>
-			 </div>
-			 */
-			var div = document.createElement('div'),
+		/**
+		 *
+		 * @param {string} type colContainer or rowContainer
+		 * @returns {HTMLElement}
+		 */
+		createPaneContainer: function(type) {
+			var pc = document.createElement('div');
+
+			pc.classList.add('paneContainer', type + 'Container');
+
+			return pc;
+		},
+
+		/**
+		 *
+		 * @param [tab]
+		 * @param [tabContent]
+		 */
+		createContentPane: function(tab, tabContent) {
+			var frag = document.createDocumentFragement(),
+				div = document.createElement('div'),
 				header = document.createElement('header'),
-				section = document.createElement('section');
+				section = tabContent || document.createElement('section'),
+				tabBar = tabBarFactory.create([tab]);
 
 			div.classList.add(this.className);
 
-			var frag = document.createDocumentFragement();
-
 			frag.appendChild(div);
+			header.appendChild(tabBar);
 			div.appendChild(header);
 			div.appendChild(section);
-			div.appendChild();
+
+
 
 
 			this.initOverlays(div);

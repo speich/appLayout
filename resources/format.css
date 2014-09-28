@@ -76,13 +76,13 @@ header, footer {
 	transition: all 0.3s ease;
 }
 
-.overlayEdge {
+.edgeOverlay {
 	min-height: 5px;
 	min-width: 5px;
 	flex: none;
 }
 
-.overlayMiddle {
+.middleOverlay {
 	flex: auto;
 }
 

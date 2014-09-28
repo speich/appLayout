@@ -4,8 +4,10 @@ define([
 	'dojo/query',
 	'appLayout/layout/Divider',
 	'appLayout/layout/overlayFactory',
+	'appLayout/layout/paneFactory',
+	'appLayout/layout/tabBarFactory',
 	'dojo/NodeList-traverse'
-], function(lang, on, query, Divider, overlayFactory) {
+], function(lang, on, query, Divider, overlayFactory, paneFactory, tabBarFactory) {
 	'use strict';
 
 	var d = document,
@@ -23,39 +25,14 @@ define([
 		},
 
 		initDnd: function() {
-			var i, nl, len;
+			var nl = d.querySelectorAll('.tabs li');
 
-			nl = d.querySelectorAll('.tabs li');
-			for (i = 0, len = nl.length; i < len; i++) {
-				nl[i].setAttribute('draggable', true);
+			// TODO: this should also be applied on overlays created after calling drop() -> splitContentPane, which adds a new divider
+			tabBarFactory.initDnd(nl);
 
-
-				on(nl[i], 'dragstart', function(evt) {
-					var i, len, node, nl;
-
-					// enable receiving mouse events on overlays to show where we can drop
-					// note: overlays are set not to receive pointer events, otherwise we could not drag a tab, because they
-					nl = d.getElementsByClassName('overlayContainer');
-					for (i = 0, len = nl.length; i < len; i++) {
-						nl[i].classList.remove('noPointerEvents');
-					}
-
-					node = this.parentNode;
-					evt.dataTransfer.setData('text/html', node);
-					evt.dataTransfer.effectAllowed = 'move';
-				});
-
-				// disable receiving mouse events on overlays, otherwise we could not drag a tab
-				on(nl[i], 'dragend', function() {
-					var i, len, nl = d.getElementsByClassName('overlayContainer');
-
-					for (i = 0, len = nl.length; i < len; i++) {
-						nl[i].classList.add('noPointerEvents');
-					}
-				});
-			}
-
-			on(d.getElementsByTagName('main')[0], '.overlayContainer:drop', lang.hitch(this, this.drop));
+			on(d.getElementsByTagName('main')[0], '.overlayContainer:drop', lang.hitch(this, function(evt) {
+				this.drop(evt);
+			}));	//
 		},
 
 		drop: function(evt) {
@@ -65,14 +42,15 @@ define([
 				overlayContainer = query(overlay).parents('.overlayContainer')[0],
 				targetContainer = query(overlayContainer).parents('.contentPane, .paneDivider')[0],
 				isDivider = targetContainer.classList.contains('paneDivider'),
-				flexDir, tabOrder, tabNav;
+				flexDir, tabOrder, tab, tabNav;
 
-			if (cl.contains('overlayMiddle')) {
+			if (cl.contains('middleOverlay')) {
 				// add to tabs
-				tabNav = targetContainer.getElementsByClassName('tabs')[0];
-				console.log(tabNav);
+				tab = evt.dataTransfer.getData('text/html');
+				this.addTab(targetContainer, tab.li, tab.section);
+
 			}
-			else if (cl.contains('overlayEdge')) {
+			else if (cl.contains('edgeOverlay')) {
 				flexDir = d.defaultView.getComputedStyle(overlayContainer, '').getPropertyValue('flex-direction');
 				tabOrder = d.defaultView.getComputedStyle(overlay, '').getPropertyValue('order');
 				console.log(flexDir, overlay, tabOrder);
@@ -86,6 +64,70 @@ define([
 
 				}
 			}
+		},
+
+		/**
+		 *
+		 * @param cpTarget cp of target
+		 * @param tab tab of source
+		 * @param tabContent content of source
+		 */
+		splitContentPane: function(cpTarget, tab, tabContent) {
+			var paneContainer, containerType, cp, divider;
+
+			containerType = cpTarget.parentNode.classList.contains('rowContainer') ? 'col' : 'row';
+
+			divider = Divider.create(containerType);
+			cp = paneFactory.createContentPane(tab, tabContent);
+
+			// 1. insert new paneContainer before existing contentPane
+			paneContainer = paneFactory.createPaneContainer(containerType);
+			cpTarget.parentNode.insertBefore(paneContainer);
+
+			// 2a.
+			if (position === 'first') {	// left or top
+				// dropped on top/left overlay (insert before):
+				// append tab/tabContent as new contentPane to paneContainer, then add a divider and already existing contentPane
+				paneContainer.appendChild(cp);
+				paneContainer.appendChild(divider);
+				paneContainer.appendChild(cpTarget);
+
+			}
+			// 2b
+			else {// right or bottom
+				// dropped on right / bottom overlay (insert after):
+				// append already existing paneContainer to new paneContainer, then add a divider and the tab/tabContent as a new contentPane
+				paneContainer.appendChild(cpTarget);
+				paneContainer.appendChild(divider);
+				paneContainer.appendChild(cp);
+			}
+		},
+
+		/**
+		 *
+		 * @param contentPane cp of target
+		 * @param tab tab of source
+		 * @param {HTMLSectionElement} tabContent of source
+		 */
+		addTab: function(contentPane, tab, tabContent) {
+			var sections, i, len;
+
+			var tabBar = contentPane.getElementsByClassName('tabs')[0];
+
+
+
+			// add dragged source tab (HTMLUlListElement) to target tabBar
+			tabBar.appendChild(tab)	// tab = <li>
+
+			// add tab content (HTMLSectionElement) to target contentPane
+			contentPane.appendChild(tabContent);
+
+			// hide all sections and show this section
+			sections = contentPane.getElementsByTagName('section');
+			for (i = 0, len = sections.length; i < len; i++) {
+				sections[i].classList.add('displayNone');
+			}
+			tab.classList.remove('displayNone');
 		},
 
 		initPanes: function() {},

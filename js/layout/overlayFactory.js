@@ -4,7 +4,7 @@
  * @module layout/overlayFactory
  * @see layout.overlayFactory
  */
-define(['dojo/on', 'appLayout/stringUtil'], function(on, stringUtil) {
+define(['dojo/on'], function(on) {
 	'use strict';
 
 	/**
@@ -13,15 +13,33 @@ define(['dojo/on', 'appLayout/stringUtil'], function(on, stringUtil) {
 	 */
 	return {
 
-		types: ['middle', 'edge'],
 
-		create: function (el, type) {
+		/**
+		 *
+		 * @param type col or row
+		 * @returns {HTMLElement}
+		 */
+		createContainer: function (type) {
 			var div = document.createElement('div');
 
-			div.classList.add('overlay', 'overlay' + stringUtil.ucfirst(type));
+			div.classList.add('overlayContainer', type + 'Container');
 
-			el.appendChild(div);
+			return div;
+		},
+
+		/**
+		 *
+		 * @param type edge or middle
+		 * @returns {HTMLElement}
+		 */
+		create: function(type) {
+			var div = document.createElement('div');
+
+			div.classList.add('overlay', type + 'Overlay');
+
 			this.initDnd(div);
+
+			return div;
 		},
 
 		/**

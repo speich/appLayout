@@ -54,6 +54,25 @@ define([
 		},
 
 		/**
+		 *
+		 * @param type row or col
+		 * @returns {HTMLElement}
+		 */
+		create: function(type) {
+			var overlay, edgeOverlay, pc;
+
+			pc = document.createElement('div');
+			pc.classList.add('paneDivider', type + 'Divider');
+
+			overlay = overlayFactory.createContainer(type);
+			edgeOverlay = overlayFactory.create('edge');
+			overlay.appendChild(edgeOverlay);
+			pc.appendChild(overlay);
+
+			return pc;
+		},
+
+		/**
 		 * Setup events
 		 */
 		initEvents: function() {
