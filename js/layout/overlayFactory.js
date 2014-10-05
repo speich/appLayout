@@ -68,7 +68,7 @@ define(['dojo/on'], function(on) {
 		 * Enable receiving mouse events on overlays to show where we can drop.
 		 * @param {boolean} [force]
 		 */
-		enableMouseEvents: function(force) {
+		enableMouseEventsAll: function(force) {
 			var overlays = document.getElementsByClassName('overlayContainer');
 
 			for (var i = 0, len = overlays.length; i < len; i++) {
