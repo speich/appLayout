@@ -26,20 +26,32 @@ define([
 		cssClass: 'tabbedNav',
 
 		/**
-		 *
-		 * @param {Array} [tabs] array of HTMLUlListElements
+		 * Create a tab bar with a least one tab.
+		 * @param {Array} [tabs] array of HTMLUListElements
 		 */
 		create: function(tabs) {
 			var ul = document.createElement('ul');
 
 			ul.className = this.cssClass;
 
-			tabs = tabs || document.createElement('li');
-			this.initDnd(tabs);
+			if (!tabs) {
+				tabs = [];
+				tabs.push(document.createElement('li'));
+				tabs[0].className = 'active';
+			}
+
+			for (var i = 0, len = tabs.length; i < len; i++) {
+				ul.appendChild(tabs);
+			}
+
+			this.initDnd(ul);
 
 			return ul;
 		},
 
+		/**
+		 * Initialize dragging for all tabs.
+		 */
 		initDndAll: function() {
 			var nl = document.getElementsByClassName(this.cssClass);
 
@@ -49,7 +61,8 @@ define([
 		},
 
 		/**
-		 * @param {HTMLUListElement} [tabContainer] tab container
+		 * Initialize dragging of a tab.
+		 * @param {HTMLElement} tabContainer tab container
 		 */
 		initDnd: function(tabContainer) {
 			var self = this,
@@ -72,6 +85,11 @@ define([
 			on(tabContainer, 'li:dragend', overlayFactory.enableMouseEventsAll);
 		},
 
+		/**
+		 * Sets the tab data to be dragged.
+		 * @param {Event} evt
+		 * @param {HTMLUListElement} tab
+		 */
 		setDndData: function(evt, tab) {
 			// note: element order of li element (tab) is assumed to be same as order of section elements (tabContent)
 			var cp,
@@ -88,6 +106,10 @@ define([
 			evt.dataTransfer.effectAllowed = 'move';
 		},
 
+		/**
+		 * Returns the dragged tab data.
+		 * @returns {{head: {HTMLUListElement}, cont: {HTMLElement}}}
+		 */
 		getDndData: function() {
 			return dndReference;
 		},
