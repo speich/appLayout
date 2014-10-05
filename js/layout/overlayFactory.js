@@ -62,6 +62,18 @@ define(['dojo/on'], function(on) {
 				this.classList.remove('overlayActive');
 				evt.preventDefault();
 			});
+		},
+
+		/**
+		 * Enable receiving mouse events on overlays to show where we can drop.
+		 * @param {boolean} [force]
+		 */
+		enableMouseEvents: function(force) {
+			var overlays = document.getElementsByClassName('overlayContainer');
+
+			for (var i = 0, len = overlays.length; i < len; i++) {
+				overlays[i].classList.toggle('noPointerEvents', force);
+			}
 		}
-	}
+	};
 });

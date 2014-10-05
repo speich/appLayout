@@ -4,7 +4,7 @@
  * @module layout/tabBarFactory
  * @see layout.tabBarFactory
  */
-define(['dojo/on'], function(on) {
+define(['dojo/on', 'appLayout/layout/overlayFactory'], function(on, overlayFactory) {
     'use strict';
 
     /**
@@ -38,14 +38,11 @@ define(['dojo/on'], function(on) {
 
 
                  on(tabs[i], 'dragstart', function (evt) {
-                     var i, len, node, tabs;
+                     var i, len, node, overlays;
 
                      // enable receiving mouse events on overlays to show where we can drop
-                     // note: overlays are set not to receive pointer events, otherwise we could not drag a tab, because they
-                     tabs = document.getElementsByClassName('overlayContainer');
-                     for (i = 0, len = tabs.length; i < len; i++) {
-                         tabs[i].classList.remove('noPointerEvents');
-                     }
+                     // note: overlays are set not to receive pointer events by default, otherwise we could not drag a tab
+                    overlayFactory.enableMouseEvents();
 
                      node = this.parentNode;
                      evt.dataTransfer.setData('text/html', node);
@@ -54,11 +51,8 @@ define(['dojo/on'], function(on) {
 
                  // disable receiving mouse events on overlays, otherwise we could not drag a tab
                  on(tabs[i], 'dragend', function () {
-                     var i, len, nl = document.getElementsByClassName('overlayContainer');
+                     overlayFactory.enableMouseEvents();
 
-                     for (i = 0, len = nl.length; i < len; i++) {
-                         nl[i].classList.add('noPointerEvents');
-                     }
                  });
              }
          }
