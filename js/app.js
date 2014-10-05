@@ -25,10 +25,7 @@ define([
 		},
 
 		initDnd: function() {
-			var nl = d.querySelectorAll('.tabs li');
-
-			// TODO: this should also be applied on overlays created after calling drop() -> splitContentPane, which adds a new divider
-			tabBarFactory.initDnd(nl);
+			tabBarFactory.initDndAll();
 
 			on(d.getElementsByTagName('main')[0], '.overlayContainer:drop', lang.hitch(this, function(evt) {
 				this.drop(evt);
@@ -42,13 +39,12 @@ define([
 				overlayContainer = query(overlay).parents('.overlayContainer')[0],
 				targetContainer = query(overlayContainer).parents('.contentPane, .paneDivider')[0],
 				isDivider = targetContainer.classList.contains('paneDivider'),
-				flexDir, tabOrder, tab, tabNav;
+				flexDir, tabOrder, tab;
 
 			if (cl.contains('middleOverlay')) {
-				// add to tabs
-				tab = evt.dataTransfer.getData('text/html');
-				this.addTab(targetContainer, tab.li, tab.section);
-
+				// add new tab
+				tab = tabBarFactory.getDndData();
+				tabBarFactory.addTab(targetContainer, tab.head, tab.cont);
 			}
 			else if (cl.contains('edgeOverlay')) {
 				flexDir = d.defaultView.getComputedStyle(overlayContainer, '').getPropertyValue('flex-direction');
@@ -101,33 +97,6 @@ define([
 				paneContainer.appendChild(divider);
 				paneContainer.appendChild(cp);
 			}
-		},
-
-		/**
-		 *
-		 * @param contentPane cp of target
-		 * @param tab tab of source
-		 * @param {HTMLSectionElement} tabContent of source
-		 */
-		addTab: function(contentPane, tab, tabContent) {
-			var sections, i, len;
-
-			var tabBar = contentPane.getElementsByClassName('tabs')[0];
-
-
-
-			// add dragged source tab (HTMLUlListElement) to target tabBar
-			tabBar.appendChild(tab)	// tab = <li>
-
-			// add tab content (HTMLSectionElement) to target contentPane
-			contentPane.appendChild(tabContent);
-
-			// hide all sections and show this section
-			sections = contentPane.getElementsByTagName('section');
-			for (i = 0, len = sections.length; i < len; i++) {
-				sections[i].classList.add('displayNone');
-			}
-			tab.classList.remove('displayNone');
 		},
 
 		initPanes: function() {},
