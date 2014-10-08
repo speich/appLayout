@@ -39,19 +39,17 @@ define([
 				overlayContainer = query(overlay).parents('.overlayContainer')[0],
 				targetContainer = query(overlayContainer).parents('.contentPane, .paneDivider')[0],
 				isDivider = targetContainer.classList.contains('paneDivider'),
-				flexDir, tabOrder, tab;
+				tab = tabBarFactory.getDndData(),
+				flexDir, tabOrder;
 
 			if (cl.contains('middleOverlay')) {
 				// add new tab
-				tab = tabBarFactory.getDndData();
 				tabBarFactory.addTab(targetContainer, tab.head, tab.cont);
 			}
 			else if (cl.contains('edgeOverlay')) {
-				flexDir = d.defaultView.getComputedStyle(overlayContainer, '').getPropertyValue('flex-direction');
-				tabOrder = d.defaultView.getComputedStyle(overlay, '').getPropertyValue('order');
-				console.log(flexDir, overlay, tabOrder);
 				if (isDivider) {
 					// dropping on divider
+					paneFactory.splitContentPane(targetContainer, tab.head, tab.cont);
 				}
 				else {
 					// add new container (where? top left bottom right?)
@@ -59,43 +57,6 @@ define([
 					// -> convert contentPane to paneContainer and add old and new panes to it
 
 				}
-			}
-		},
-
-		/**
-		 *
-		 * @param cpTarget cp of target
-		 * @param tab tab of source
-		 * @param tabContent content of source
-		 */
-		splitContentPane: function(cpTarget, tab, tabContent) {
-			var paneContainer, containerType, cp, divider;
-
-			containerType = cpTarget.parentNode.classList.contains('rowContainer') ? 'col' : 'row';
-
-			divider = Divider.create(containerType);
-			cp = paneFactory.createContentPane(tab, tabContent);
-
-			// 1. insert new paneContainer before existing contentPane
-			paneContainer = paneFactory.createPaneContainer(containerType);
-			cpTarget.parentNode.insertBefore(paneContainer);
-
-			// 2a.
-			if (position === 'first') {	// left or top
-				// dropped on top/left overlay (insert before):
-				// append tab/tabContent as new contentPane to paneContainer, then add a divider and already existing contentPane
-				paneContainer.appendChild(cp);
-				paneContainer.appendChild(divider);
-				paneContainer.appendChild(cpTarget);
-
-			}
-			// 2b
-			else {// right or bottom
-				// dropped on right / bottom overlay (insert after):
-				// append already existing paneContainer to new paneContainer, then add a divider and the tab/tabContent as a new contentPane
-				paneContainer.appendChild(cpTarget);
-				paneContainer.appendChild(divider);
-				paneContainer.appendChild(cp);
 			}
 		},
 
@@ -109,7 +70,7 @@ define([
 			for (i = 0, len = nl.length; i < len; i++) {
 				var nextNode, prevNode,
 					divider = new Divider({
-						type: nl[i].classList.contains('rowDivider') ? 'horizontal' : 'vertical'
+						type: nl[i].classList.contains('rowDivider') ? 'row' : 'col'
 					});
 
 				prevNode = query(nl[i]).prev()[0];
