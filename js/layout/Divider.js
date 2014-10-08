@@ -26,7 +26,7 @@ define([
 	 */
 	return declare(null, /* @lends Divider.prototype */ {
 
-		type: 'vertical',
+		type: 'col',
 		_lastX: null,	// store x coordinate of last mouse position
 		_lastY: null,
 
@@ -49,6 +49,7 @@ define([
 			this.node1 = node1;
 			this.node2 = node2;
 			this.siblings = query('> .contentPane, > .paneContainer', domNode.parentNode);
+			this.type = domNode.classList.contains('rowDivider') ? 'row' : 'col'
 
 			this.initEvents();
 		},
@@ -81,7 +82,7 @@ define([
 
 				evt.preventDefault(); // prevent text selection when dragging
 
-				if (this.type === 'vertical') {
+				if (this.type === 'col') {
 					dragFnc = this.dragHorizontal;
 					this._lastX = evt.pageX;
 				}
