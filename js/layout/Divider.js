@@ -2,7 +2,6 @@
  * This file contains a the class to create a draggable divider.
  * @module layout/Divider
  * @see layout.Divider
- * TODO: implement horizontal type
  */
 define([
 	'dojo/_base/declare',
@@ -55,25 +54,6 @@ define([
 		},
 
 		/**
-		 *
-		 * @param type row or col
-		 * @returns {HTMLElement}
-		 */
-		create: function(type) {
-			var overlay, edgeOverlay, pc;
-
-			pc = document.createElement('div');
-			pc.classList.add('paneDivider', type + 'Divider');
-
-			overlay = overlayFactory.createContainer(type);
-			edgeOverlay = overlayFactory.create('edge');
-			overlay.appendChild(edgeOverlay);
-			pc.appendChild(overlay);
-
-			return pc;
-		},
-
-		/**
 		 * Setup events
 		 */
 		initEvents: function() {
@@ -121,7 +101,7 @@ define([
 				values.push(this.getCssComputed(nl[i], style));
 			}
 
-			// write only after reading
+			// write only after reading, separate for loop required
 			for(i = 0, len = nl.length; i < len; i++) {
 				nl[i].style[style] = values[i] + 'px';
 			}
