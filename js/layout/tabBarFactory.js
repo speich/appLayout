@@ -41,7 +41,7 @@ define([
 			}
 
 			for (var i = 0, len = tabs.length; i < len; i++) {
-				ul.appendChild(tabs);
+				ul.appendChild(tabs[i]);
 			}
 
 			this.initDnd(ul);

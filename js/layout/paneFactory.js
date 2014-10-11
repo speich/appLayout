@@ -2,15 +2,15 @@ define([
 	'dojo/_base/declare',
 	'appLayout/domUtil',
 	'appLayout/layout/Divider',
-	'appLayout/layout/overlayFactory'
-], function(declare, domUtil, Divider, overlayFactory) {
+	'appLayout/layout/dividerFactory',
+	'appLayout/layout/overlayFactory',
+	'appLayout/layout/tabBarFactory'
+], function(declare, domUtil, Divider, dividerFactory, overlayFactory, tabBarFactory) {
 
 
-	return declare(null, {
+	return {
 
-		domNode: null,
 		className: 'contentPane',
-		type: '',
 
 		/**
 		 *
@@ -31,7 +31,7 @@ define([
 		 * @param [tabContent]
 		 */
 		createContentPane: function(tab, tabContent) {
-			var frag = document.createDocumentFragement(),
+			var //frag = document.createDocumentFragement(),
 				div = document.createElement('div'),
 				header = document.createElement('header'),
 				section = tabContent || document.createElement('section'),
@@ -39,24 +39,38 @@ define([
 
 			div.classList.add(this.className);
 
-			frag.appendChild(div);
+			//frag.appendChild(div);
 			header.appendChild(tabBar);
 			div.appendChild(header);
 			div.appendChild(section);
 
-
-
-
-			this.initOverlays(div);
-			this.domNode = div;
-
-			this.containerNode.appendChild(frag);
+			overlay = this.initOverlays(div);
+div.appendChild.
+			return div;
 		},
 
 		initOverlays: function(div) {
 			// depending on the number of siblings and the position (first, last, only) in the container node, we create
 			// the dnd overlays correspondingly.
 			overlayFactory.create(div);
+		},
+
+		insertNew: function(cpTarget, tab, tabContent) {
+			var contentPane, containerType, parent = cpTarget.parentNode, divider, domNode;
+
+			containerType = parent.classList.contains('rowContainer') ? 'col' : 'row';
+
+
+			contentPane = this.createContentPane(tab, tabContent);
+			parent.insertBefore(cpTarget, contentPane);
+
+			domNode = dividerFactory.create(containerType);
+			divider = new Divider();
+			divider.init(divider);
+
+			// append tab/tabContent as new contentPane to paneContainer, then add a divider and already existing contentPane
+			parent.insertBefore(cpTarget, domNode);
+
 		},
 
 		/**
@@ -71,7 +85,8 @@ define([
 			containerType = cpTarget.parentNode.classList.contains('rowContainer') ? 'col' : 'row';
 
 			divider = new Divider();
-			divider.create(containerType);
+			divider = divider.create(containerType);
+			divider.init(divider);
 			cp = this.createContentPane(tab, tabContent);
 
 			// 1. insert new paneContainer before existing contentPane
@@ -98,5 +113,5 @@ define([
 		}
 
 
-	});
+	};
 });

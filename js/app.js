@@ -49,7 +49,7 @@ define([
 			else if (cl.contains('edgeOverlay')) {
 				if (isDivider) {
 					// dropping on divider
-					paneFactory.splitContentPane(targetContainer, tab.head, tab.cont);
+					paneFactory.insertNew(targetContainer, tab.head, tab.cont);
 				}
 				else {
 					// add new container (where? top left bottom right?)
