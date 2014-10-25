@@ -7,8 +7,9 @@ define([
 	'dojo/_base/declare',
 	'dojo/_base/lang',
 	'dojo/on',
-	'dojo/query'
-], function(declare, lang, on, query) {
+	'dojo/query',
+	'appLayout/layout/dividerFactory'
+], function(declare, lang, on, query, dividerFactory) {
 	'use strict';
 
 	var d = document;
@@ -19,7 +20,7 @@ define([
 	 * be resized when the divider is dragged. The container elements need to be CSS flexible elements, one of them has
 	 * to have the flex property set to none.
 	 * @class layout.Divider
-	 * @property {String} type vertical or horizontal divider
+	 * @property {String} [type] col or row divider
 	 * @property {HTMLElement} domNode divider container
 	 * @property {NodeList} siblings to resize
 	 */
@@ -34,21 +35,21 @@ define([
 
 		constructor: function(params) {
 			lang.mixin(this, params || {});
-			this.evtHandlers = [];
+			this._evtHandlers = [];
 		},
 
 		/**
 		 * Initializes the divider.
-		 * @param {HTMLElement} domNode divider
-		 * @param node2
-		 * @param node1
+		 * @param {HTMLDivElement} domNode divider
 		 */
-		init: function(domNode, node1, node2) {
+		init: function(domNode) {
+			var neighbors = dividerFactory.findNeighbors(domNode);
+
 			this.domNode = domNode;
-			this.node1 = node1;
-			this.node2 = node2;
+			this.node1 = neighbors.prev;
+			this.node2 = neighbors.next;
 			this.siblings = query('> .contentPane, > .paneContainer', domNode.parentNode);
-			this.type = domNode.classList.contains('rowDivider') ? 'row' : 'col'
+			this.type = domNode.classList.contains('rowDivider') ? 'row' : 'col';
 
 			this.initEvents();
 		},
@@ -74,10 +75,10 @@ define([
 				this.setNodes();
 
 				signal = on(window, 'mousemove', lang.hitch(this, dragFnc));
-				this.evtHandlers.push(signal);
+				this._evtHandlers.push(signal);
 
 				signal = on(window, 'mouseup', lang.hitch(this, this.endDrag));
-				this.evtHandlers.push(signal);
+				this._evtHandlers.push(signal);
 
 				on.emit(this.domNode, 'divider-dragstart', {
 					bubbles: true,
@@ -94,7 +95,7 @@ define([
 		setNodes: function() {
 			var i, len, nl = this.siblings,
 				values = [],
-				style = this.type === 'vertical' ? 'width' : 'height';
+				style = this.type === 'col' ? 'width' : 'height';
 
 			// important: split reading and setting into two separate loops to make dragging work with flexbox layout
 			for(i = 0, len = nl.length; i < len; i++) {
@@ -158,7 +159,7 @@ define([
 		 * Terminates the dragging on mouseup and removes the event listeners.
 		 */
 		endDrag: function() {
-			this.evtHandlers.forEach(function(signal) {
+			this._evtHandlers.forEach(function(signal) {
 				signal.remove();
 			});
 
