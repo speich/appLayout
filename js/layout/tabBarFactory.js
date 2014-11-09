@@ -77,7 +77,7 @@ define([
 				// enable receiving mouse events on overlays to show where we can drop
 				// note: overlays are set not to receive pointer events by default, otherwise we could not drag a tab
 				overlayFactory.enableMouseEventsAll();
-
+				//this.style.cursor = 'move';
 				self.setDndData(evt, this);
 			});
 

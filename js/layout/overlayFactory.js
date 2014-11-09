@@ -16,21 +16,21 @@ define(['dojo/on'], function(on) {
 
 		/**
 		 *
-		 * @param type col or row
-		 * @returns {HTMLElement}
+		 * @param {string} type col or row
+		 * @return {HTMLDivElement}
 		 */
-		createContainer: function (type) {
+		createContainer: function(type) {
 			var div = document.createElement('div');
 
-			div.classList.add('overlayContainer', type + 'Container');
+			div.classList.add('overlayContainer', type + 'Container', 'noPointerEvents');
 
 			return div;
 		},
 
 		/**
 		 *
-		 * @param type edge or middle
-		 * @returns {HTMLElement}
+		 * @param {string} type edge or middle
+		 * @return {HTMLDivElement}
 		 */
 		create: function(type) {
 			var div = document.createElement('div');
@@ -46,7 +46,7 @@ define(['dojo/on'], function(on) {
 		 * Add allow dropping to overlay.
 		 * @param {HTMLElement} overlay
 		 */
-		initDnd: function (overlay) {
+		initDnd: function(overlay) {
 			// TODO: use event delegation on contentPane instead of attaching to each overlay?
 			overlay.addEventListener('dragenter', function () {
 				this.classList.add('overlayActive');
