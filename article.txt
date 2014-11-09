@@ -1,8 +1,13 @@
+Even though everything has been about mobile for quite a while now, there are still developers like me who care more
+about desktop applications. So this post is going to be
+
 The purpose of this article is to show you the power of HTML5 for application development insbesondere the flexbox layout.
  The user will be able to drag and drop panes around to completely rearrange or and create a new application layout which suits them the best.
  To see what I mean, have a look at the demo. You can drag each pane around and drop it in a new location. Readers familiar
  with Adobe Bridge or Adobe
 
+Not surprisingly, jQuery has been the choice for many of Mozilla's developrers. But in this article we are going to use the dojotoolkit instead
+since I'm a big fan of it and because in my opinion it's better suited for larger web applications.
 
 Idea is to let the browser do the calulcating of widht and height when distributing space for containers by using flexbox.
 
