@@ -63,19 +63,13 @@ define([
 		initPanes: function() {},
 
 		initDividers: function() {
-			var i, len,
+			var i, len, divider,
 				nl = d.getElementsByClassName('paneDivider');
 
 			// init dividers
 			for (i = 0, len = nl.length; i < len; i++) {
-				var nextNode, prevNode,
-					divider = new Divider({
-						type: nl[i].classList.contains('rowDivider') ? 'row' : 'col'
-					});
-
-				prevNode = query(nl[i]).prev()[0];
-				nextNode = query(nl[i]).next()[0];
-				divider.init(nl[i], prevNode, nextNode);
+				divider = new Divider();
+				divider.init(nl[i]);
 			}
 		},
 
