@@ -4,8 +4,9 @@
  * @see layout.dividerFactory
  */
 define([
+	'dojo/query',
 	'appLayout/layout/overlayFactory'
-], function(overlayFactory) {
+], function(query, overlayFactory) {
 	'use strict';
 
 	/**
@@ -22,8 +23,8 @@ define([
 
 		/**
 		 *
-		 * @param type row or col
-		 * @returns {HTMLElement}
+		 * @param {string} type row or col
+		 * @returns {HTMLDivElement}
 		 */
 		create: function(type) {
 			var overlay, edgeOverlay, pc;
@@ -37,7 +38,17 @@ define([
 			pc.appendChild(overlay);
 
 			return pc;
-		}
+		},
 
+		/**
+		 * Returns the node before and after.
+		 * @return {{prev: {HTMLElement}, next: {HTMLElement}}}
+		 */
+		findNeighbors: function(node) {
+			return {
+				prev: query(node).prev()[0],
+				next: query(node).next()[0]
+			};
+		}
 	};
 });
