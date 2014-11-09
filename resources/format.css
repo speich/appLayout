@@ -25,6 +25,8 @@ header, footer {
 
 [draggable] {
 	user-select: none;
+}
+[draggable]:active {
 	cursor: move;
 }
 
@@ -90,7 +92,6 @@ header, footer {
 	box-shadow: inset #6495ed 0 0 0 5px;
 }
 
-/* new in step 2 */
 .rowDivider {
 	min-height: 5px;
 	height: 5px;
