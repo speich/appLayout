@@ -1,76 +1,98 @@
 define([
-	'dojo/_base/declare',
-	'appLayout/domUtil',
 	'appLayout/layout/Divider',
 	'appLayout/layout/dividerFactory',
 	'appLayout/layout/overlayFactory',
 	'appLayout/layout/tabBarFactory'
-], function(declare, domUtil, Divider, dividerFactory, overlayFactory, tabBarFactory) {
-
+], function(Divider, dividerFactory, overlayFactory, tabBarFactory) {
+	'use strict';
 
 	return {
 
-		className: 'contentPane',
+		clNameContentPane: 'contentPane',
+		clNamePaneContainer: 'paneContainer',
+		clSuffixPaneContainer: 'Container',
 
 		/**
-		 *
+		 * Creates the element, which serves as the parent of a content pane.
+		 * The pane container comes in two types. A row container, where the children are aligned in rows, and a col
+		 * container, where the children are layout out as columns.
 		 * @param {string} type colContainer or rowContainer
-		 * @returns {HTMLElement}
+		 * @return {HTMLDivElement}
 		 */
 		createPaneContainer: function(type) {
 			var pc = document.createElement('div');
 
-			pc.classList.add('paneContainer', type + 'Container');
+			pc.classList.add(this.clNamePaneContainer, type + this.clSuffixPaneContainer);
 
 			return pc;
 		},
 
 		/**
-		 *
+		 * Creates the DOM of the content pane.
 		 * @param [tab]
 		 * @param [tabContent]
+		 * @return {HTMLDivElement}
 		 */
 		createContentPane: function(tab, tabContent) {
-			var //frag = document.createDocumentFragement(),
-				div = document.createElement('div'),
+			var div = document.createElement('div'),
 				header = document.createElement('header'),
 				section = tabContent || document.createElement('section'),
-				tabBar = tabBarFactory.create([tab]);
+				tabBar = tabBarFactory.create([tab]),
+				overlay = this.createOverlays();
 
-			div.classList.add(this.className);
+			div.classList.add(this.clNameContentPane);
 
-			//frag.appendChild(div);
+			div.appendChild(overlay);
 			header.appendChild(tabBar);
 			div.appendChild(header);
 			div.appendChild(section);
 
-			overlay = this.initOverlays(div);
-div.appendChild.
 			return div;
 		},
 
-		initOverlays: function(div) {
+		/**
+		 * Create the DOM of the overlays.
+		 * @returns {HTMLDivElement}
+		 */
+		createOverlays: function() {
 			// depending on the number of siblings and the position (first, last, only) in the container node, we create
 			// the dnd overlays correspondingly.
-			overlayFactory.create(div);
+			var containerNode = overlayFactory.createContainer('row');
+
+			containerNode.appendChild(overlayFactory.create('edge'));
+			containerNode.appendChild(overlayFactory.create('middle'));
+			containerNode.appendChild(overlayFactory.create('edge'));
+
+			return containerNode;
 		},
 
+		/**
+		 * Insert a new content pane above or left of the target.
+		 * @param cpTarget
+		 * @param tab
+		 * @param tabContent
+		 */
 		insertNew: function(cpTarget, tab, tabContent) {
-			var contentPane, containerType, parent = cpTarget.parentNode, divider, domNode;
+			var contentPane, type,
+				parent = cpTarget.parentNode,
+				neighbors, divider, domNode;
 
-			containerType = parent.classList.contains('rowContainer') ? 'col' : 'row';
+			type = parent.classList.contains('row' + this.clSuffixPaneContainer) ? 'row' : 'col';
 
-
+			// create and add a new content pane
 			contentPane = this.createContentPane(tab, tabContent);
-			parent.insertBefore(cpTarget, contentPane);
+			parent.insertBefore(contentPane, cpTarget);
 
-			domNode = dividerFactory.create(containerType);
+			// create and add a new divider
+			domNode = dividerFactory.create(type);
 			divider = new Divider();
-			divider.init(divider);
+			divider.init(domNode);
+			parent.insertBefore(domNode, contentPane);
 
-			// append tab/tabContent as new contentPane to paneContainer, then add a divider and already existing contentPane
-			parent.insertBefore(cpTarget, domNode);
+			// re-init the divider we dropped on, since it has a new neighbor
+			//cpTarget
 
+			// re-init all divider events?
 		},
 
 		/**
@@ -79,14 +101,14 @@ div.appendChild.
 		 * @param tab tab of source
 		 * @param tabContent content of source
 		 */
+		/*
 		splitContentPane: function(cpTarget, tab, tabContent) {
-			var paneContainer, containerType, cp, divider;
+			var paneContainer, type, cp, divider, position, domNode;
 
-			containerType = cpTarget.parentNode.classList.contains('rowContainer') ? 'col' : 'row';
-
+			type = cpTarget.parentNode.classList.contains('row' + this.clSuffixPaneContainer) ? 'col' : 'row';
+			domNode = dividerFactory.create(type);
 			divider = new Divider();
-			divider = divider.create(containerType);
-			divider.init(divider);
+			divider.init(domNode);
 			cp = this.createContentPane(tab, tabContent);
 
 			// 1. insert new paneContainer before existing contentPane
@@ -111,7 +133,7 @@ div.appendChild.
 				paneContainer.appendChild(cp);
 			}
 		}
-
+*/
 
 	};
 });
