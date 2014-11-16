@@ -5,16 +5,14 @@ define([
 	'appLayout/layout/Divider',
 	'appLayout/layout/overlayFactory',
 	'appLayout/layout/paneFactory',
+	'appLayout/layout/dividerFactory',
 	'appLayout/layout/tabBarFactory',
 	'dojo/NodeList-traverse'
-], function(lang, on, query, Divider, overlayFactory, paneFactory, tabBarFactory) {
+], function(lang, on, query, Divider, overlayFactory, paneFactory, dividerFactory, tabBarFactory) {
 	'use strict';
 
 	var d = document,
-		byId = function(id) {
-			return d.getElementById(id);
-		};
-
+		registryDividers = [];
 
 	return {
 
@@ -29,18 +27,17 @@ define([
 
 			on(d.getElementsByTagName('main')[0], '.overlayContainer:drop', lang.hitch(this, function(evt) {
 				this.drop(evt);
-			}));	//
+			}));
 		},
 
 		drop: function(evt) {
-			var cpSource = this.parentNode,
+			var pane, divider, node,
 				overlay = evt.target,
 				cl = overlay.classList,
 				overlayContainer = query(overlay).parents('.overlayContainer')[0],
 				targetContainer = query(overlayContainer).parents('.contentPane, .paneDivider')[0],
 				isDivider = targetContainer.classList.contains('paneDivider'),
-				tab = tabBarFactory.getDndData(),
-				flexDir, tabOrder;
+				tab = tabBarFactory.getDndData();
 
 			if (cl.contains('middleOverlay')) {
 				// add new tab
@@ -49,7 +46,16 @@ define([
 			else if (cl.contains('edgeOverlay')) {
 				if (isDivider) {
 					// dropping on divider
-					paneFactory.insertNew(targetContainer, tab.head, tab.cont);
+					// add a new contentPane
+					pane = paneFactory.insertBefore(targetContainer, tab.head, tab.cont);
+					// add a new divider
+					node = dividerFactory.insertBefore(pane);
+
+					divider = new Divider();
+					divider.init(node);
+					// re-init the divider (=targetContainer) we dropped on, since it has new neighbor (contentPane).
+					this.resetDividers();
+					registryDividers.push(divider);
 				}
 				else {
 					// add new container (where? top left bottom right?)
@@ -70,7 +76,15 @@ define([
 			for (i = 0, len = nl.length; i < len; i++) {
 				divider = new Divider();
 				divider.init(nl[i]);
+				registryDividers.push(divider);
 			}
+		},
+
+		resetDividers: function() {
+			registryDividers.forEach(function(divider) {
+				divider.removeEvents();
+				divider.init(divider.domNode);
+			});
 		},
 
 		initEvents: function() {

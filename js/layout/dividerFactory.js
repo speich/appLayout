@@ -41,6 +41,24 @@ define([
 		},
 
 		/**
+		 * Create and insert a new divider before target.
+		 * Creates the DOM of a divider, inserts it before the passed node and returns the divider.
+		 * @param {Node} target
+		 * @return {Divider}
+		 */
+		insertBefore: function(target) {
+			var parent, type, node;
+
+			parent = target.parentNode;
+			type = parent.classList.contains('rowContainer') ? 'row' : 'col';
+
+			node = this.create(type);
+			parent.insertBefore(node, target);
+
+			return node;
+		},
+
+		/**
 		 * Returns the node before and after.
 		 * @return {{prev: {HTMLElement}, next: {HTMLElement}}}
 		 */

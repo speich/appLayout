@@ -67,33 +67,22 @@ define([
 		},
 
 		/**
-		 * Insert a new content pane above or left of the target.
-		 * @param cpTarget
+		 * Create and insert a new content pane above or left of the target.
+		 * Creates the DOM of a pane, inserts it before the passed node and returns the pane.
+		 * @param target
 		 * @param tab
 		 * @param tabContent
+		 * @return {Node}
 		 */
-		insertNew: function(cpTarget, tab, tabContent) {
-			var contentPane, type,
-				parent = cpTarget.parentNode,
-				neighbors, divider, domNode;
+		insertBefore: function(target, tab, tabContent) {
+			var contentPane,
+				parent = target.parentNode;
 
-			type = parent.classList.contains('row' + this.clSuffixPaneContainer) ? 'row' : 'col';
-
-			// create and add a new content pane
 			contentPane = this.createContentPane(tab, tabContent);
-			parent.insertBefore(contentPane, cpTarget);
+			parent.insertBefore(contentPane, target);
 
-			// create and add a new divider
-			domNode = dividerFactory.create(type);
-			divider = new Divider();
-			divider.init(domNode);
-			parent.insertBefore(domNode, contentPane);
-
-			// re-init the divider we dropped on, since it has a new neighbor
-			//cpTarget
-
-			// re-init all divider events?
-		},
+			return contentPane;
+		}
 
 		/**
 		 *
