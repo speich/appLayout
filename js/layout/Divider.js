@@ -14,14 +14,6 @@ define([
 
 	var d = document;
 
-	// variable and function to autogenerate ID when one isn't provided.
-	// Note: ID's are required to keep a registry of dividers for removal of events
-	var autogen = 0;
-
-	function generateId(){
-		return "divider_" + autogen++;
-	}
-
 	/**
 	 * Creates the divider object.
 	 * Layout should consist of a handle element (divider) and two container elements to either side of it, which will
@@ -52,8 +44,6 @@ define([
 		 */
 		init: function(domNode) {
 			var neighbors = dividerFactory.findNeighbors(domNode);
-
-			domNode.id = domNode.id || generateId();
 
 			// cache some properties/references for better performance and ease of access.
 			this.domNode = domNode;
