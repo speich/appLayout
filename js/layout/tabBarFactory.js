@@ -92,11 +92,9 @@ define([
 		 */
 		setDndData: function(evt, tab) {
 			// note: element order of li element (tab) is assumed to be same as order of section elements (tabContent)
-			var cp,
-				tabContainer = tab.parentNode,
-				idx = domUtil.getElementIndex(tab);
+			var cp, idx = domUtil.getElementIndex(tab);
 
-			cp = query(tabContainer).parents('.contentPane')[0];
+			cp = query(tab.parentNode).parents('.contentPane')[0];
 
 			// since we cannot dnd a node directly, save reference to it
 			dndReference.head = tab;
