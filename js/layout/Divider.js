@@ -49,7 +49,7 @@ define([
 			this.domNode = domNode;
 			this.node1 = neighbors.prev;
 			this.node2 = neighbors.next;
-			this.siblings = query('> .contentPane, > .paneContainer', domNode.parentNode);
+			this.siblings = query('> .contentPane, > .paneContainer', domNode.parentNode);	// TODO: shouldn't this be all panes making up the full window width/height instead?
 			this.type = domNode.classList.contains('rowDivider') ? 'row' : 'col';
 
 			this.initEvents();
