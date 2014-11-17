@@ -89,7 +89,7 @@ define([
 		},
 
 		/**
-		 * Set width or height of nodes explicitly.
+		 * Set width or height of all sibling nodes explicitly.
 		 * Set the css width or height of all parent containers explicitly to make dragging (resizing containers)
 		 * work with flexbox layout.
 		 */
@@ -106,6 +106,18 @@ define([
 			// write only after reading, separate for loop required
 			for(i = 0, len = nl.length; i < len; i++) {
 				nl[i].style[style] = values[i] + 'px';
+			}
+		},
+
+		/**
+		 * Reset the width or height of all sibling nodes.
+		 */
+		resetNodes: function() {
+			var i, len, nl = this.siblings,
+				style = this.type === 'col' ? 'width' : 'height';
+
+			for(i = 0, len = nl.length; i < len; i++) {
+				nl[i].style[style] = '';
 			}
 		},
 
