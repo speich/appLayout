@@ -4,7 +4,7 @@
  * @module layout/overlayFactory
  * @see layout.overlayFactory
  */
-define(['dojo/on'], function(on) {
+define(function() {
 	'use strict';
 
 	/**
@@ -12,7 +12,6 @@ define(['dojo/on'], function(on) {
 	 * @class layout.overlayFactory
 	 */
 	return {
-
 
 		/**
 		 *
@@ -74,6 +73,19 @@ define(['dojo/on'], function(on) {
 			for (var i = 0, len = overlays.length; i < len; i++) {
 				overlays[i].classList.toggle('noPointerEvents', force);
 			}
+		},
+
+		/**
+		 * Toogles the overlay from type row to col or vice versa.
+		 * @param overlayContainer
+		 */
+		toggleClass: function(overlayContainer) {
+
+			var cl = overlayContainer.classList,
+				type = cl.contains('rowContainer') ? 'row' : 'col';
+
+			cl.remove(type + 'Container');
+			cl.add((type === 'row' ? 'col' : 'row') + 'Container');
 		}
 	};
 });
