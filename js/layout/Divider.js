@@ -17,8 +17,7 @@ define([
 	/**
 	 * Creates the divider object.
 	 * Layout should consist of a handle element (divider) and two container elements to either side of it, which will
-	 * be resized when the divider is dragged. The container elements need to be CSS flexible elements, one of them has
-	 * to have the flex property set to none.
+	 * be resized when the divider is dragged. Neighbors have to have a fixed width/height for this to work.
 	 * @class layout.Divider
 	 * @property {String} [type] col or row divider
 	 * @property {HTMLElement} domNode divider container
@@ -49,7 +48,6 @@ define([
 			this.domNode = domNode;
 			this.node1 = neighbors.prev;
 			this.node2 = neighbors.next;
-			this.siblings = query('> .contentPane, > .paneContainer', domNode.parentNode);	// TODO: shouldn't this be all panes making up the full window width/height instead?
 			this.type = domNode.classList.contains('rowDivider') ? 'row' : 'col';
 
 			this.initEvents();
@@ -89,36 +87,73 @@ define([
 		},
 
 		/**
+		 * Find all nodes contributing to the width/height of the window.
+		 * Searches the dom for width/height over all siblings on the same level or higher all the way up to the window
+		 * Returns an Object containing all nodes and the corresponding widths/heights
+		 * @return {object}
+		 */
+		findNodes: function() {
+			// note: either we start on an overlay of aquery on a divider or on a
+			// siblings can either be other contentPanes or paneContainers
+			var self = this,
+				obj = {
+					nodes: [],
+					values: []
+				},
+				startNode = this.domNode.parentNode,
+				style = this.type === 'col' ? 'width' : 'height';
+
+			// query same level
+			query('> .contentPane, > .paneContainer', startNode).forEach(function findSiblings(node) {
+				obj.nodes.push(node);
+				obj.values.push(self.getCssComputed(node, style));
+			});
+
+			// query all parent levels
+			query(startNode).parents('.paneContainer').forEach(function findSiblings(node) {
+				obj.nodes.push(node);
+				query('> .contentPane, > .paneContainer', node).forEach(function findSiblings(node) {
+					obj.nodes.push(node);
+					obj.values.push(self.getCssComputed(node, style));
+				});
+			});
+
+			return obj;
+		},
+
+		/**
 		 * Set width or height of all sibling nodes explicitly.
 		 * Set the css width or height of all parent containers explicitly to make dragging (resizing containers)
 		 * work with flexbox layout.
 		 */
 		setNodes: function() {
-			var i, len, nl = this.siblings,
-				values = [],
+			var i, len, nodeObj,
 				style = this.type === 'col' ? 'width' : 'height';
 
-			// important: split reading and setting into two separate loops to make dragging work with flexbox layout
-			for(i = 0, len = nl.length; i < len; i++) {
-				values.push(this.getCssComputed(nl[i], style));
-			}
+			// important: split reading and setting into two separate loops to make dragging work with flexbox layout. Directly setting would already modify layout before we finished reading
+			nodeObj = this.findNodes();
 
 			// write only after reading, separate for loop required
-			for(i = 0, len = nl.length; i < len; i++) {
-				nl[i].style[style] = values[i] + 'px';
+			for(i = 0, len = nodeObj.nodes.length; i < len; i++) {
+				nodeObj.nodes[i].style[style] = nodeObj.values[i] + 'px';
 			}
+
+			nodeObj = null;
 		},
 
 		/**
 		 * Reset the width or height of all sibling nodes.
 		 */
 		resetNodes: function() {
-			var i, len, nl = this.siblings,
+			var i, len,
+				nodeObj = this.findNodes(),
 				style = this.type === 'col' ? 'width' : 'height';
 
-			for(i = 0, len = nl.length; i < len; i++) {
-				nl[i].style[style] = '';
+			for(i = 0, len = nodeObj.nodes.length; i < len; i++) {
+				nodeObj.nodes[i].style[style] = '';
 			}
+
+			nodeObj = null;
 		},
 
 		/**
