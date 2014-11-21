@@ -79,3 +79,5 @@ note: you can't directly dnd dom nodes, you have to serialize it first (innerHTM
 - so far we only used the DOM and not any object/classes. The only exception are the dividers. This leads to one problem when inserting a new
 pane. The sibling divider needs to be adpated to the new neighbours, but how do we find it since we cannot use a node? We need to store a reference, either anonymously (delete all)
 or we use an identifier to delete a specific divider.
+
+I think this is a great example of the beauty of the flexbox layout. All I have to do to change and overlay from column type to row type is the flex-direction property
