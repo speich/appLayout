@@ -29,16 +29,17 @@ define([
 
 		/**
 		 * Creates the DOM of the content pane.
-		 * @param [tab]
-		 * @param [tabContent]
+		 * @param {String} type overlay type 'row' or 'col'
+		 * @param {Array} [tabs]
+		 * @param {HTMLElement} [tabContent] section element
 		 * @return {HTMLDivElement}
 		 */
-		createContentPane: function(tab, tabContent) {
+		createContentPane: function(type, tabs, tabContent) {
 			var div = document.createElement('div'),
 				header = document.createElement('header'),
 				section = tabContent || document.createElement('section'),
-				tabBar = tabBarFactory.create([tab]),
-				overlay = this.createOverlays();
+				tabBar = tabBarFactory.create([tabs]),
+				overlay = this.createOverlays(type);
 
 			div.classList.add(this.clNameContentPane);
 
@@ -54,10 +55,10 @@ define([
 		 * Create the DOM of the overlays.
 		 * @returns {HTMLDivElement}
 		 */
-		createOverlays: function() {
+		createOverlays: function(type) {
 			// depending on the number of siblings and the position (first, last, only) in the container node, we create
 			// the dnd overlays correspondingly.
-			var containerNode = overlayFactory.createContainer('row');
+			var containerNode = overlayFactory.createContainer(type);
 
 			containerNode.appendChild(overlayFactory.create('edge'));
 			containerNode.appendChild(overlayFactory.create('middle'));
@@ -75,10 +76,11 @@ define([
 		 * @return {Node}
 		 */
 		insertBefore: function(target, tab, tabContent) {
-			var contentPane,
+			var contentPane, type,
 				parent = target.parentNode;
 
-			contentPane = this.createContentPane(tab, tabContent);
+			type = parent.classList.contains('rowContainer') ? 'col' : 'row';
+			contentPane = this.createContentPane(type, tab, tabContent);
 			parent.insertBefore(contentPane, target);
 
 			return contentPane;
