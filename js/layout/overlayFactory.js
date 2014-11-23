@@ -28,7 +28,7 @@ define(function() {
 
 		/**
 		 *
-		 * @param {string} type edge or middle
+		 * @param {String} type 'edge' or 'middle'
 		 * @return {HTMLDivElement}
 		 */
 		create: function(type) {

@@ -23,7 +23,7 @@ define([
 
 		/**
 		 *
-		 * @param {string} type row or col
+		 * @param {string} type 'row' or 'col'
 		 * @returns {HTMLDivElement}
 		 */
 		create: function(type) {

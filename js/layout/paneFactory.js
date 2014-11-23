@@ -53,6 +53,7 @@ define([
 
 		/**
 		 * Create the DOM of the overlays.
+		 * @param {String} type 'row' or 'col'
 		 * @returns {HTMLDivElement}
 		 */
 		createOverlays: function(type) {
