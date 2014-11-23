@@ -27,23 +27,15 @@ define([
 
 		/**
 		 * Create a tab bar with a least one tab.
-		 * @param {Array} [tabs] array of HTMLUListElements
+		 * @param {Array} tabs array of HTMLUListElements
 		 */
 		create: function(tabs) {
 			var ul = document.createElement('ul');
 
 			ul.className = this.cssClass;
-
-			if (!tabs) {
-				tabs = [];
-				tabs.push(document.createElement('li'));
-				tabs[0].className = 'active';
-			}
-
 			for (var i = 0, len = tabs.length; i < len; i++) {
 				ul.appendChild(tabs[i]);
 			}
-
 			this.initDnd(ul);
 
 			return ul;
