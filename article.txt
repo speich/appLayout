@@ -81,3 +81,10 @@ pane. The sibling divider needs to be adpated to the new neighbours, but how do 
 or we use an identifier to delete a specific divider.
 
 I think this is a great example of the beauty of the flexbox layout. All I have to do to change and overlay from column type to row type is the flex-direction property
+
+
+
+DOM structure:
+- a contentPane can only have contentPane(s) and/or paneContainers and/ord paneDivider(s) as siblings
+- a contentPane can only have a paneContainer as a parent
+- a paneContainer can only have paneContainer as a parent except for the last <main> element which is only a row or colContainer

@@ -8,7 +8,8 @@ define([
 	'dojo/_base/lang',
 	'dojo/on',
 	'dojo/query',
-	'appLayout/layout/dividerFactory'
+	'appLayout/layout/dividerFactory',
+	'dojo/NodeList-dom'
 ], function(declare, lang, on, query, dividerFactory) {
 	'use strict';
 
@@ -146,14 +147,16 @@ define([
 		 */
 		resetNodes: function() {
 			var i, len,
-				nodeObj = this.findNodes(),
+				//nodeObj = this.findNodes(),
 				style = this.type === 'col' ? 'width' : 'height';
 
+			query('.contentPane[style], .paneContainer[style]').style(style, '');
+/*
 			for(i = 0, len = nodeObj.nodes.length; i < len; i++) {
 				nodeObj.nodes[i].style[style] = '';
 			}
-
-			nodeObj = null;
+*/
+			//nodeObj = null;
 		},
 
 		/**

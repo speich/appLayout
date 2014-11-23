@@ -13,7 +13,7 @@ define([
 	'use strict';
 
 	var d = document,
-		registryDividers = [];
+		registryDividers = [];  // keep a registry of dividers, since d.getElementsByClassName('paneDivider') only gets us access to the DOM node, but not to the Divider class.
 
 	return {
 
@@ -50,13 +50,14 @@ console.log(source, target);
 				return false;
 			}
 */
-			// dropping on a divider -> add a new contentPane
+			// dropping on a divider
 			if (isDivider) {
-				// dropping on divider -> add a new contentPane
+				// add a new pane before the divider
 				pane = paneFactory.insertBefore(targetContainer, tab.head, tab.cont);
-				// add a new divider
+				// add a new divider before the new pane
 				nodeDivider = dividerFactory.insertBefore(pane);
-				this.addDivider(nodeDivider);
+				this.registerDivider(nodeDivider);
+				this.resetDividers();   // divider we dropped on and newly created divider both have new neighbors, also reset width/heights of all parent containers
 			}
 			// add a new tab
 			else if (cl.contains('middleOverlay')) {
@@ -83,7 +84,7 @@ console.log(source, target);
 				targetParent.insertBefore(paneContainer, targetContainer);
 				paneContainer.appendChild(targetContainer);
 				nodeDivider = dividerFactory.create(type);
-				pane = paneFactory.createContentPane(tab.head, tab.cont);
+				pane = paneFactory.createContentPane(type, tab.head, tab.cont);
 				if (idx === 0) {
 					paneContainer.insertBefore(nodeDivider, targetContainer);
 					paneContainer.insertBefore(pane, nodeDivider);
@@ -93,7 +94,7 @@ console.log(source, target);
 					paneContainer.appendChild(pane);
 				}
 
-				this.addDivider(nodeDivider);
+				this.registerDivider(nodeDivider);
 
 //this.reinitDividers();
 			}
@@ -113,7 +114,7 @@ console.log(source, target);
 			}
 		},
 
-		addDivider: function(node){
+		registerDivider: function(node){
 			var divider = new Divider();
 			divider.init(node);
 			registryDividers.push(divider);
@@ -126,11 +127,7 @@ console.log(source, target);
 				divider.init(divider.domNode);
 			});
 		},
-reinitDividers: function() {
-	registryDividers.forEach(function (divider) {
-		divider.init(divider.domNode);
-	});
-},
+
 		initEvents: function() {
 			var i, len,
 				nl = d.getElementsByClassName('overlay');
