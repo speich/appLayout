@@ -15,6 +15,11 @@ Idea is to let the browser do the calulcating of widht and height when distribut
 We will make use of the following web technologies: css transitions, flexbox layout, dojo toolkit (no, for once its' not jQuery ;-), drag n drop
 css variables.
 
+I tried to follow some guidelines: only DOM factories, no classes. I avoided storing any app state information in object properties, because
+that would get lost on reload/close and require keeping track of state. Instead I use the DOM to store the state, which will
+allow to just export the html as string and store it on the server or in indexedDB, where it can be restored from on page load to
+get the exact layout back.
+
 1.
 Lets start with our initial application layout. It is made up of a header, main and footer element. The main contains our
 base elements contentPane (show image). Are layed out in a flexbox layout see article...
