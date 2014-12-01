@@ -25,6 +25,8 @@ header, footer {
 
 [draggable] {
 	user-select: none;
+}
+[draggable]:active {
 	cursor: move;
 }
 
@@ -76,13 +78,13 @@ header, footer {
 	transition: all 0.3s ease;
 }
 
-.overlayEdge {
+.edgeOverlay {
 	min-height: 5px;
 	min-width: 5px;
 	flex: none;
 }
 
-.overlayMiddle {
+.middleOverlay {
 	flex: auto;
 }
 
@@ -90,7 +92,6 @@ header, footer {
 	box-shadow: inset #6495ed 0 0 0 5px;
 }
 
-/* new in step 2 */
 .rowDivider {
 	min-height: 5px;
 	height: 5px;
@@ -113,7 +114,7 @@ header, footer {
 	flex: auto;
 }
 
-.tabs {
+.tabbedNav {
 	margin: 0;
 	padding: 0;
 	display: flex;
@@ -123,7 +124,7 @@ header, footer {
 	overflow: hidden;
 }
 
-.tabs li {
+.tabbedNav li {
 	display: inline;
 	list-style: none;
 	font-size: 0.7em;
@@ -131,7 +132,7 @@ header, footer {
 	border-right: 1px solid #cccccc;
 }
 
-.tabs li.active {
+.tabbedNav li.active {
 	background-color: #ffffff;
 }
 

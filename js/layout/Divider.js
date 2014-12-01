@@ -7,8 +7,10 @@ define([
 	'dojo/_base/declare',
 	'dojo/_base/lang',
 	'dojo/on',
-	'dojo/query'
-], function(declare, lang, on, query) {
+	'dojo/query',
+	'appLayout/layout/dividerFactory',
+	'dojo/NodeList-dom'
+], function(declare, lang, on, query, dividerFactory) {
 	'use strict';
 
 	var d = document;
@@ -16,16 +18,15 @@ define([
 	/**
 	 * Creates the divider object.
 	 * Layout should consist of a handle element (divider) and two container elements to either side of it, which will
-	 * be resized when the divider is dragged. The container elements need to be CSS flexible elements, one of them has
-	 * to have the flex property set to none.
+	 * be resized when the divider is dragged. Neighbors have to have a fixed width/height for this to work.
 	 * @class layout.Divider
-	 * @property {String} type vertical or horizontal divider
+	 * @property {String} [type] col or row divider
 	 * @property {HTMLElement} domNode divider container
 	 * @property {NodeList} siblings to resize
 	 */
 	return declare(null, /* @lends Divider.prototype */ {
 
-		type: 'vertical',
+		type: 'col',
 		_lastX: null,	// store x coordinate of last mouse position
 		_lastY: null,
 
@@ -34,20 +35,21 @@ define([
 
 		constructor: function(params) {
 			lang.mixin(this, params || {});
-			this.evtHandlers = [];
+			this._evtHandlers = [];
 		},
 
 		/**
 		 * Initializes the divider.
-		 * @param {HTMLElement} domNode divider
-		 * @param node2
-		 * @param node1
+		 * @param {HTMLDivElement} domNode divider
 		 */
-		init: function(domNode, node1, node2) {
+		init: function(domNode) {
+			var neighbors = dividerFactory.findNeighbors(domNode);
+
+			// cache some properties/references for better performance and ease of access.
 			this.domNode = domNode;
-			this.node1 = node1;
-			this.node2 = node2;
-			this.siblings = query('> .contentPane, > .paneContainer', domNode.parentNode);
+			this.node1 = neighbors.prev;
+			this.node2 = neighbors.next;
+			this.type = domNode.classList.contains('rowDivider') ? 'row' : 'col';
 
 			this.initEvents();
 		},
@@ -61,7 +63,7 @@ define([
 
 				evt.preventDefault(); // prevent text selection when dragging
 
-				if (this.type === 'vertical') {
+				if (this.type === 'col') {
 					dragFnc = this.dragHorizontal;
 					this._lastX = evt.pageX;
 				}
@@ -73,10 +75,10 @@ define([
 				this.setNodes();
 
 				signal = on(window, 'mousemove', lang.hitch(this, dragFnc));
-				this.evtHandlers.push(signal);
+				this._evtHandlers.push(signal);
 
 				signal = on(window, 'mouseup', lang.hitch(this, this.endDrag));
-				this.evtHandlers.push(signal);
+				this._evtHandlers.push(signal);
 
 				on.emit(this.domNode, 'divider-dragstart', {
 					bubbles: true,
@@ -86,24 +88,75 @@ define([
 		},
 
 		/**
-		 * Set width or height of nodes explicitly.
+		 * Find all nodes contributing to the width/height of the window.
+		 * Searches the dom for width/height over all siblings on the same level or higher all the way up to the window
+		 * Returns an Object containing all nodes and the corresponding widths/heights
+		 * @return {object}
+		 */
+		findNodes: function() {
+			// note: either we start on an overlay of aquery on a divider or on a
+			// siblings can either be other contentPanes or paneContainers
+			var self = this,
+				obj = {
+					nodes: [],
+					values: []
+				},
+				startNode = this.domNode.parentNode,
+				style = this.type === 'col' ? 'width' : 'height';
+
+			// query same level
+			query('> .contentPane, > .paneContainer', startNode).forEach(function findSiblings(node) {
+				obj.nodes.push(node);
+				obj.values.push(self.getCssComputed(node, style));
+			});
+
+			// query all parent levels
+			query(startNode).parents('.paneContainer').forEach(function findSiblings(node) {
+				obj.nodes.push(node);
+				query('> .contentPane, > .paneContainer', node).forEach(function findSiblings(node) {
+					obj.nodes.push(node);
+					obj.values.push(self.getCssComputed(node, style));
+				});
+			});
+
+			return obj;
+		},
+
+		/**
+		 * Set width or height of all sibling nodes explicitly.
 		 * Set the css width or height of all parent containers explicitly to make dragging (resizing containers)
 		 * work with flexbox layout.
 		 */
 		setNodes: function() {
-			var i, len, nl = this.siblings,
-				values = [],
-				style = this.type === 'vertical' ? 'width' : 'height';
+			var i, len, nodeObj,
+				style = this.type === 'col' ? 'width' : 'height';
 
-			// important: split reading and setting into two separate loops to make dragging work with flexbox layout
-			for(i = 0, len = nl.length; i < len; i++) {
-				values.push(this.getCssComputed(nl[i], style));
+			// important: split reading and setting into two separate loops to make dragging work with flexbox layout. Directly setting would already modify layout before we finished reading
+			nodeObj = this.findNodes();
+
+			// write only after reading, separate for loop required
+			for(i = 0, len = nodeObj.nodes.length; i < len; i++) {
+				nodeObj.nodes[i].style[style] = nodeObj.values[i] + 'px';
 			}
 
-			// write only after reading
-			for(i = 0, len = nl.length; i < len; i++) {
-				nl[i].style[style] = values[i] + 'px';
+			nodeObj = null;
+		},
+
+		/**
+		 * Reset the width or height of all sibling nodes.
+		 */
+		resetNodes: function() {
+			var i, len,
+				//nodeObj = this.findNodes(),
+				style = this.type === 'col' ? 'width' : 'height';
+
+			query('.contentPane[style], .paneContainer[style]').style(style, '');
+/*
+			for(i = 0, len = nodeObj.nodes.length; i < len; i++) {
+				nodeObj.nodes[i].style[style] = '';
 			}
+*/
+			//nodeObj = null;
 		},
 
 		/**
@@ -157,14 +210,22 @@ define([
 		 * Terminates the dragging on mouseup and removes the event listeners.
 		 */
 		endDrag: function() {
-			this.evtHandlers.forEach(function(signal) {
-				signal.remove();
-			});
+			this.removeEvents();
 
 			on.emit(this.domNode, 'divider-dragend', {
 				bubbles: true,
 				cancelable: true
 			});
+		},
+
+		/**
+		 * Remove all events handlers.
+		 */
+		removeEvents: function() {
+			this._evtHandlers.forEach(function(signal) {
+				signal.remove();
+			});
+			this._evtHandlers = [];
 		}
 	});
 });

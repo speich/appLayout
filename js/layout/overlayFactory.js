@@ -4,7 +4,7 @@
  * @module layout/overlayFactory
  * @see layout.overlayFactory
  */
-define(['dojo/on', 'appLayout/stringUtil'], function(on, stringUtil) {
+define(function() {
 	'use strict';
 
 	/**
@@ -13,22 +13,40 @@ define(['dojo/on', 'appLayout/stringUtil'], function(on, stringUtil) {
 	 */
 	return {
 
-		types: ['middle', 'edge'],
-
-		create: function (el, type) {
+		/**
+		 *
+		 * @param {string} type col or row
+		 * @return {HTMLDivElement}
+		 */
+		createContainer: function(type) {
 			var div = document.createElement('div');
 
-			div.classList.add('overlay', 'overlay' + stringUtil.ucfirst(type));
+			div.classList.add('overlayContainer', type + 'Container', 'noPointerEvents');
 
-			el.appendChild(div);
+			return div;
+		},
+
+		/**
+		 *
+		 * @param {String} type 'edge' or 'middle'
+		 * @return {HTMLDivElement}
+		 */
+		create: function(type) {
+			var div = document.createElement('div');
+
+			div.classList.add('overlay', type + 'Overlay');
+
 			this.initDnd(div);
+
+			return div;
 		},
 
 		/**
 		 * Add allow dropping to overlay.
 		 * @param {HTMLElement} overlay
 		 */
-		initDnd: function (overlay) {
+		initDnd: function(overlay) {
+			// TODO: use event delegation on contentPane instead of attaching to each overlay?
 			overlay.addEventListener('dragenter', function () {
 				this.classList.add('overlayActive');
 			});
@@ -43,6 +61,31 @@ define(['dojo/on', 'appLayout/stringUtil'], function(on, stringUtil) {
 				this.classList.remove('overlayActive');
 				evt.preventDefault();
 			});
+		},
+
+		/**
+		 * Enable receiving mouse events on overlays to show where we can drop.
+		 * @param {boolean} [force]
+		 */
+		enableMouseEventsAll: function(force) {
+			var overlays = document.getElementsByClassName('overlayContainer');
+
+			for (var i = 0, len = overlays.length; i < len; i++) {
+				overlays[i].classList.toggle('noPointerEvents', force);
+			}
+		},
+
+		/**
+		 * Toogles the overlay from type row to col or vice versa.
+		 * @param overlayContainer
+		 */
+		toggleClass: function(overlayContainer) {
+
+			var cl = overlayContainer.classList,
+				type = cl.contains('rowContainer') ? 'row' : 'col';
+
+			cl.remove(type + 'Container');
+			cl.add((type === 'row' ? 'col' : 'row') + 'Container');
 		}
-	}
+	};
 });
