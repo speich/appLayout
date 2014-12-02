@@ -13,3 +13,5 @@ Drag and drop tab onto divider:
 
 Drag and drop tab onto overlay:
 ![Screenshot 1](screenshot-3.gif "Screenshot of appLayout")
+
+For more information read my [article about flexbox layout](https://hacks.mozilla.org/2013/12/application-layout-with-css3-flexible-box-module/) on hacks.mozilla.org.
