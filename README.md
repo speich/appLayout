@@ -3,7 +3,7 @@ appLayout
 
 A flexbox based application layout, where the content panes can be resized and reordered with drag and drop.
 
-Demo available on [speich.net](http://www.speich.net/projects/programming/appLayout.html)
+Demo available on [speich.net](http://www.speich.net/projects/programming/flexbox-layout.html)
 
 Drag and drop tab onto another tab:
 ![Screenshot 1](screenshot-1.gif "Screenshot of appLayout")
