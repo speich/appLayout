@@ -43,14 +43,13 @@ define([
 		 * @param {HTMLDivElement} domNode divider
 		 */
 		init: function(domNode) {
-			var neighbors = dividerFactory.findNeighbors(domNode);
+
 
 			// cache some properties/references for better performance and ease of access.
 			this.domNode = domNode;
-			this.node1 = neighbors.prev;
-			this.node2 = neighbors.next;
 			this.type = domNode.classList.contains('rowDivider') ? 'row' : 'col';
 
+			this.setNeighbors();
 			this.initEvents();
 		},
 
@@ -87,6 +86,14 @@ define([
 			}));
 		},
 
+		setNeighbors: function() {
+			var neighbors = dividerFactory.findNeighbors(this.domNode);
+
+			this.node1 = neighbors.prev;
+			this.node2 = neighbors.next;
+			neighbors = null;
+		},
+
 		/**
 		 * Find all nodes contributing to the width/height of the window and cache them.
 		 * Searches the dom for width/height over all siblings on the same level or higher all the way up to the window
@@ -94,26 +101,27 @@ define([
 		 * @return {object}
 		 */
 		findNodes: function() {
-			// note: either we start on an overlay of a query on a divider or on a
-			// siblings can either be other contentPanes or paneContainers
+			// note: siblings can either be other contentPanes or paneContainers
+			//       only query containers of same type
 			var self = this,
 				obj = {
 					nodes: [],
 					values: []
 				},
-				startNode = this.domNode.parentNode,
-				style = this.type === 'col' ? 'width' : 'height';
+				style = this.type === 'col' ? 'width' : 'height',
+				containerType = (this.type === 'col' ? 'row' : 'col') + 'Container';
 
-			// query same level, siblings can either be a contentPane or a paneContainer
-			query('> .contentPane, > .paneContainer', startNode).forEach(function findSiblings(node) {
+			// query same level, a dividers sibling panes can either be of type contentPane or paneContainer
+			query('> .contentPane, > .paneContainer', this.domNode.parentNode).forEach(function findSiblings(node) {
 				obj.nodes.push(node);
 				obj.values.push(self.getCssComputed(node, style));
 			});
 
-			// query all parent levels
-			query(startNode).parents('.contentPane, .paneContainer').forEach(function findSiblings(node) {
+			// query all parent levels, parents ony of same type
+			query(this.domNode).parents('.contentPane, .paneContainer.' + containerType).forEach(function findSiblings(node) {
+				var temp = node;
 				// query same levels
-				query(node).siblings('.paneContainer').forEach(function findSiblings(node) {
+				query(node).siblings('.contentPane, .paneContainer').forEach(function findSiblings(node) {
 					obj.nodes.push(node);
 					obj.values.push(self.getCssComputed(node, style));
 				});
