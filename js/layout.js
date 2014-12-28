@@ -33,6 +33,11 @@ define([
 			});
 		},
 
+		/**
+		 * Handle dropping of a tab.
+		 * @param {Node} source
+		 * @param {Node} target
+		 */
 		drop: function(source, target) {
 console.log(source, target);
 
@@ -57,22 +62,21 @@ console.log(source, target);
 				// add a new divider before the new pane
 				nodeDivider = dividerFactory.insertBefore(pane);
 				this.registerDivider(nodeDivider);
-				this.resetDividers();   // divider we dropped on and newly created divider both have new neighbors, also reset width/heights of all parent containers
+
 			}
-			// add a new tab
+			// dropping on pane middle -> add a new tab
 			else if (cl.contains('middleOverlay')) {
 				tabBarFactory.addTab(targetContainer, tab.head, tab.cont);
 			}
-			// split pane container
+			// dropping on pane edge -> split pane container
 			else {
-				// re-init the divider (=targetContainer) we dropped on, since it has new neighbor (contentPane).
-				this.resetDividers();
+
 
 				if (source === targetOverlayContainer) {
 					// TODO: does not work on created pane yet after already toggling parent
 					overlayFactory.toggleClass(source);
 				}
-				// TODO: remove width of old neigbors for Divider to work properly
+				// TODO: remove width of old neighbors for Divider to work properly
 				// TODO: move to new method split()?
 				// add new container (where? top left bottom right?)
 				// use css order property together with flex-direction to find which edge we dropped on
@@ -96,8 +100,12 @@ console.log(source, target);
 
 				this.registerDivider(nodeDivider);
 
-//this.reinitDividers();
+
 			}
+
+			// reset dividers, since neighbors previous and after the drop have new neighbors.
+			// for simplicity we just reset all dividers.
+			this.resetDividers();
 		},
 
 		initPanes: function() {},
@@ -114,6 +122,10 @@ console.log(source, target);
 			}
 		},
 
+		/**
+		 * Create a divider and add it to the registry.
+		 * @param node
+		 */
 		registerDivider: function(node){
 			var divider = new Divider();
 			divider.init(node);
@@ -122,9 +134,10 @@ console.log(source, target);
 
 		resetDividers: function() {
 			registryDividers.forEach(function(divider) {
-				divider.removeEvents();
-				divider.resetNodes();
-				divider.init(divider.domNode);
+				//divider.removeEvents();
+				//divider.resetNodes();
+				//divider.init(divider.domNode);
+				divider.setNeighbors();
 			});
 		},
 
