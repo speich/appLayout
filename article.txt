@@ -54,7 +54,7 @@ css class purposes:
 overlayContainer: place overlays middle left top right bottom according to flexbox direction
 
 
-flexbox has the advantage that the browser takes care of resizing all the containers for you. This is especially usful
+flexbox has the advantage that the browser takes care of resizing all the containers for you. This is especially useful
 in case of nested containers, since you would have to calculate width/heights for all these at hte time of dragging
 
 
@@ -93,3 +93,8 @@ DOM structure:
 - a contentPane can only have contentPane(s) and/or paneContainers and/ord paneDivider(s) as siblings
 - a contentPane can only have a paneContainer as a parent
 - a paneContainer can only have paneContainer as a parent except for the last <main> element which is only a row or colContainer
+
+
+- you can't just set the width/height of all panes instead of only using siblings and parent's siblings.
+ If you dragged a divider that has child panes with a fixed width/height they wouldn't automatically adapt to the parent's new size.
+ This is also a good argument to use flexbox, the browser autom resize child panes for you!
