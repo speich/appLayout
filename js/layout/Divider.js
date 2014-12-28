@@ -88,13 +88,13 @@ define([
 		},
 
 		/**
-		 * Find all nodes contributing to the width/height of the window.
+		 * Find all nodes contributing to the width/height of the window and cache them.
 		 * Searches the dom for width/height over all siblings on the same level or higher all the way up to the window
 		 * Returns an Object containing all nodes and the corresponding widths/heights
 		 * @return {object}
 		 */
 		findNodes: function() {
-			// note: either we start on an overlay of aquery on a divider or on a
+			// note: either we start on an overlay of a query on a divider or on a
 			// siblings can either be other contentPanes or paneContainers
 			var self = this,
 				obj = {
@@ -104,16 +104,16 @@ define([
 				startNode = this.domNode.parentNode,
 				style = this.type === 'col' ? 'width' : 'height';
 
-			// query same level
+			// query same level, siblings can either be a contentPane or a paneContainer
 			query('> .contentPane, > .paneContainer', startNode).forEach(function findSiblings(node) {
 				obj.nodes.push(node);
 				obj.values.push(self.getCssComputed(node, style));
 			});
 
 			// query all parent levels
-			query(startNode).parents('.paneContainer').forEach(function findSiblings(node) {
-				obj.nodes.push(node);
-				query('> .contentPane, > .paneContainer', node).forEach(function findSiblings(node) {
+			query(startNode).parents('.contentPane, .paneContainer').forEach(function findSiblings(node) {
+				// query same levels
+				query(node).siblings('.paneContainer').forEach(function findSiblings(node) {
 					obj.nodes.push(node);
 					obj.values.push(self.getCssComputed(node, style));
 				});
