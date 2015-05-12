@@ -27,9 +27,14 @@ define([
 			var self = this;
 			tabBarFactory.initDndAll();
 
+			// TODO: we do not have a reference to source container
 			on(d.getElementsByTagName('main')[0], '.overlayContainer:drop', function(evt) {
 				// TODO: handle special case of dropping last tab of a content pane, e.g. remove that pane and divider
-				lang.hitch(self, self.drop(this, evt.target));
+				// if (this.allowDrop(source, target)) {
+				 lang.hitch(self, self.drop(this, evt.target));
+
+				// return false;
+				// }
 			});
 		},
 
@@ -39,10 +44,7 @@ define([
 		 * @param {Node} target
 		 */
 		drop: function(source, target) {
-console.log(source, target);
-
-			var pane, divider, nodeDivider, idx, type, targetParent, paneContainer,
-				sourceParent = source.parent,
+			var pane, nodeDivider, idx, type, targetParent, paneContainer,
 				targetOverlay = target,
 				cl = targetOverlay.classList,
 				targetOverlayContainer = query(targetOverlay).parents('.overlayContainer')[0],// note: overlay containers can have different dom (overlay over divider vs. overlay over contentPane)
@@ -50,11 +52,6 @@ console.log(source, target);
 				isDivider = targetContainer.classList.contains('paneDivider'),
 				tab = tabBarFactory.getDndData();
 
-			/*
-			if (!this.allowDrop(source, target)) {
-				return false;
-			}
-*/
 			// dropping on a divider
 			if (isDivider) {
 				// add a new pane before the divider
@@ -68,7 +65,7 @@ console.log(source, target);
 			else if (cl.contains('middleOverlay')) {
 				tabBarFactory.addTab(targetContainer, tab.head, tab.cont);
 			}
-			// dropping on pane edge -> split pane container
+			// dropping on pane edge -> split pane container and create new parent for column or row layout
 			else {
 
 
