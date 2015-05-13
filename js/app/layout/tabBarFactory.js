@@ -7,8 +7,8 @@
 define([
 	'dojo/on',
 	'dojo/query',
-	'appLayout/layout/overlayFactory',
-	'appLayout/domUtil',
+	'./overlayFactory',
+	'../domUtil',
 	'dojo/NodeList-traverse'], function(on, query, overlayFactory, domUtil) {
 	'use strict';
 

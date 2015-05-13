@@ -8,7 +8,7 @@ define([
 	'dojo/_base/lang',
 	'dojo/on',
 	'dojo/query',
-	'appLayout/layout/dividerFactory',
+	'./dividerFactory',
 	'dojo/NodeList-dom'
 ], function(declare, lang, on, query, dividerFactory) {
 	'use strict';

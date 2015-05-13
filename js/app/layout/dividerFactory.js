@@ -5,7 +5,8 @@
  */
 define([
 	'dojo/query',
-	'appLayout/layout/overlayFactory'
+	'./overlayFactory',
+	'dojo/NodeList-traverse'
 ], function(query, overlayFactory) {
 	'use strict';
 

@@ -92,7 +92,7 @@ I think this is a great example of the beauty of the flexbox layout. All I have 
 
 
 a paneContainer serves to layout the children (contentPanes) as rows or columns
-
+an overlayContainer is used to display drop target on mouse over
 
 DOM structure:
 - a contentPane can only have contentPane(s) and/or paneContainers and/ord paneDivider(s) as siblings
