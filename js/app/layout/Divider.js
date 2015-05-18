@@ -19,7 +19,7 @@ define([
 	 * Creates the divider object.
 	 * Layout should consist of a handle element (divider) and two container elements to either side of it, which will
 	 * be resized when the divider is dragged. Neighbors have to have a fixed width/height for this to work.
-	 * @class layout.Divider
+	 * @class Divider
 	 * @property {String} [type] col or row divider
 	 * @property {HTMLElement} domNode divider container
 	 * @property {NodeList} siblings to resize
