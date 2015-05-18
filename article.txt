@@ -1,7 +1,11 @@
+Title: Resizable flex layout with drag and drop
+
+
 Even though everything has been about mobile for quite a while now, there are still developers like me who care more
 about desktop applications. So this post is going to be
 
-The purpose of this article is to show you the power of HTML5 for application development insbesondere the flexbox layout.
+The purpose of this article is to show you the power of HTML5 for application development, particularly the flexible box layout.
+It is is currently my favorite feature, not only because its so genially designed, but also because it solves so many problems I have struggled with when developing GUI's, be it forms, application or webpage layouts.
  The user will be able to drag and drop panes around to completely rearrange or and create a new application layout which suits them the best.
  To see what I mean, have a look at the demo. You can drag each pane around and drop it in a new location. Readers familiar
  with Adobe Bridge or Adobe
@@ -9,13 +13,12 @@ The purpose of this article is to show you the power of HTML5 for application de
 Not surprisingly, jQuery has been the choice for many of Mozilla's developrers. But in this article we are going to use the dojotoolkit instead
 since I'm a big fan of it and because in my opinion it's better suited for larger web applications.
 
-Idea is to let the browser do the calulcating of widht and height when distributing space for containers by using flexbox.
-
+Idea is to let the browser do the calculating of width and height when distributing space for containers by using flexbox.
 
 We will make use of the following web technologies: css transitions, flexbox layout, dojo toolkit (no, for once its' not jQuery ;-), drag n drop
 css variables.
 
-I tried to follow some guidelines: only DOM factories, no classes. I avoided storing any app state information in object properties, because
+I tried to follow some guidelines: only DOM factories, no js classes. I avoided storing any app state information in object properties, because
 that would get lost on reload/close and require keeping track of state. Instead I use the DOM to store the state, which will
 allow to just export the html as string and store it on the server or in indexedDB, where it can be restored from on page load to
 get the exact layout back.
@@ -24,7 +27,7 @@ get the exact layout back.
 Lets start with our initial application layout. It is made up of a header, main and footer element. The main contains our
 base elements contentPane (show image). Are layed out in a flexbox layout see article...
 
-I find it hard to remember, that flex-direction column means the stretching not the result of the child items.
+I find it hard to remember, that flex-direction column means the stretching not the result of the child items. refers to the flex-direction not the result (child items)
 
 Each base element is div element of class contentPane and consists of a header and a section element.
 
@@ -54,7 +57,7 @@ css class purposes:
 overlayContainer: place overlays middle left top right bottom according to flexbox direction
 
 
-flexbox has the advantage that the browser takes care of resizing all the containers for you. This is especially usful
+flexbox has the advantage that the browser takes care of resizing all the containers for you. This is especially useful
 in case of nested containers, since you would have to calculate width/heights for all these at hte time of dragging
 
 
@@ -88,8 +91,15 @@ or we use an identifier to delete a specific divider.
 I think this is a great example of the beauty of the flexbox layout. All I have to do to change and overlay from column type to row type is the flex-direction property
 
 
+a paneContainer serves to layout the children (contentPanes) as rows or columns
+an overlayContainer is used to display drop target on mouse over
 
 DOM structure:
 - a contentPane can only have contentPane(s) and/or paneContainers and/ord paneDivider(s) as siblings
 - a contentPane can only have a paneContainer as a parent
 - a paneContainer can only have paneContainer as a parent except for the last <main> element which is only a row or colContainer
+
+
+- you can't just set the width/height of all panes instead of only using siblings and parent's siblings.
+ If you dragged a divider that has child panes with a fixed width/height they wouldn't automatically adapt to the parent's new size.
+ This is also a good argument to use flexbox, the browser autom resize child panes for you!

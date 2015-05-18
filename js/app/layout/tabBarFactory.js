@@ -7,14 +7,15 @@
 define([
 	'dojo/on',
 	'dojo/query',
-	'appLayout/layout/overlayFactory',
-	'appLayout/domUtil',
+	'./overlayFactory',
+	'../domUtil',
 	'dojo/NodeList-traverse'], function(on, query, overlayFactory, domUtil) {
 	'use strict';
 
 	var dndReference = {
 		head: null,
-		cont: null
+		cont: null,
+		parent: null
 	};
 
 	/**
@@ -27,7 +28,7 @@ define([
 
 		/**
 		 * Create a tab bar with a least one tab.
-		 * @param {Array} tabs array of HTMLUListElements
+		 * @param {Array} tabs array of HTMLLIElements
 		 */
 		create: function(tabs) {
 			var ul = document.createElement('ul');
@@ -54,7 +55,7 @@ define([
 
 		/**
 		 * Initialize dragging of a tab.
-		 * @param {HTMLElement} tabContainer tab container
+		 * @param {HTMLUListElement} tabContainer tab container
 		 */
 		initDnd: function(tabContainer) {
 			var self = this,
@@ -64,12 +65,11 @@ define([
 				tabs[i].setAttribute('draggable', true);
 			}
 
-			// use event delegation for tabs. This allows for easy adding a new tab without having to add the dnd events
+			// use event delegation for tabs. This allows for easy adding a new tab without having to add the dnd events to each tab.
 			on(tabContainer, 'li:dragstart', function(evt) {
 				// enable receiving mouse events on overlays to show where we can drop
 				// note: overlays are set not to receive pointer events by default, otherwise we could not drag a tab
 				overlayFactory.enableMouseEventsAll();
-				//this.style.cursor = 'move';
 				self.setDndData(evt, this);
 			});
 
@@ -80,7 +80,7 @@ define([
 		/**
 		 * Sets the tab data to be dragged.
 		 * @param {Event} evt
-		 * @param {HTMLUListElement} tab
+		 * @param {HTMLLIElement} tab
 		 */
 		setDndData: function(evt, tab) {
 			// note: element order of li element (tab) is assumed to be same as order of section elements (tabContent)
@@ -88,11 +88,13 @@ define([
 
 			cp = query(tab.parentNode).parents('.contentPane')[0];
 
-			// since we cannot dnd a node directly, save reference to it
-			dndReference.head = tab;
-			dndReference.cont = cp.getElementsByTagName('section')[idx];
-
-			evt.dataTransfer.setData('text/html', tab);  // dummy data to make browser show correct dnd image
+			// Drag types are limited to text or serialized html -> store a reference or create a container html and serialize it
+			dndReference = {
+				head: tab,
+				cont: cp.getElementsByTagName('section')[idx],
+				parent: cp
+			};
+			evt.dataTransfer.setData('tab', dndReference);  // dummy data to make browser show correct dnd image
 			evt.dataTransfer.effectAllowed = 'move';
 		},
 
@@ -108,7 +110,7 @@ define([
 		 * Adds a new tab to the content pane.
 		 * Adds the head and the content of the tab to the content pane and sets them active.
 		 * @param {HTMLDivElement} contentPane cp of target
-		 * @param {HTMLUListElement} tab tab of source
+		 * @param {HTMLLIElement} tab tab of source
 		 * @param {HTMLElement} tabContent of source
 		 */
 		addTab: function(contentPane, tab, tabContent) {
@@ -128,6 +130,17 @@ define([
 			}
 			sections[i-1].classList.remove('displayNone');
 			tab.classList.add('active');
+		},
+
+		/**
+		 * Return the number of tabs in the tab bar.
+		 * @param {HTMLDivElement} contentPane
+		 * @return {number}
+		 */
+		getNumTabs: function(contentPane) {
+			var tabBar = contentPane.getElementsByClassName(this.cssClass)[0];
+
+			return tabBar.getElementsByTagName('li') ? tabBar.getElementsByTagName('li').length : 0;
 		}
 	};
 });

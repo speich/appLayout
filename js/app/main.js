@@ -2,12 +2,12 @@ define([
 	'dojo/_base/lang',
 	'dojo/on',
 	'dojo/query',
-	'appLayout/domUtil',
-	'appLayout/layout/Divider',
-	'appLayout/layout/overlayFactory',
-	'appLayout/layout/paneFactory',
-	'appLayout/layout/dividerFactory',
-	'appLayout/layout/tabBarFactory',
+	'./domUtil',
+	'./layout/Divider',
+	'./layout/overlayFactory',
+	'./layout/paneFactory',
+	'./layout/dividerFactory',
+	'./layout/tabBarFactory',
 	'dojo/NodeList-traverse'
 ], function(lang, on, query, domUtil, Divider, overlayFactory, paneFactory, dividerFactory, tabBarFactory) {
 	'use strict';
@@ -25,54 +25,49 @@ define([
 
 		initDnd: function() {
 			var self = this;
+
 			tabBarFactory.initDndAll();
 
+			// TODO: we do not have a reference to source container
 			on(d.getElementsByTagName('main')[0], '.overlayContainer:drop', function(evt) {
-				// TODO: handle special case of dropping last tab of a content pane, e.g. remove that pane and divider
 				lang.hitch(self, self.drop(this, evt.target));
 			});
 		},
 
+		/**
+		 * Handle dropping of a tab.
+		 * @param {Node} source
+		 * @param {Node} target
+		 */
 		drop: function(source, target) {
-console.log(source, target);
-
-			var pane, divider, nodeDivider, idx, type, targetParent, paneContainer,
-				sourceParent = source.parent,
+			var pane, nodeDivider, idx, type, targetParent, paneContainer,
 				targetOverlay = target,
 				cl = targetOverlay.classList,
 				targetOverlayContainer = query(targetOverlay).parents('.overlayContainer')[0],// note: overlay containers can have different dom (overlay over divider vs. overlay over contentPane)
 				targetContainer = query(targetOverlayContainer).parents('.contentPane, .paneDivider')[0],
 				isDivider = targetContainer.classList.contains('paneDivider'),
-				tab = tabBarFactory.getDndData();
+				dndData = tabBarFactory.getDndData();
 
-			/*
-			if (!this.allowDrop(source, target)) {
-				return false;
-			}
-*/
 			// dropping on a divider
 			if (isDivider) {
 				// add a new pane before the divider
-				pane = paneFactory.insertBefore(targetContainer, tab.head, tab.cont);
+				pane = paneFactory.insertBefore(targetContainer, dndData.head, dndData.cont);
 				// add a new divider before the new pane
 				nodeDivider = dividerFactory.insertBefore(pane);
 				this.registerDivider(nodeDivider);
-				this.resetDividers();   // divider we dropped on and newly created divider both have new neighbors, also reset width/heights of all parent containers
-			}
-			// add a new tab
-			else if (cl.contains('middleOverlay')) {
-				tabBarFactory.addTab(targetContainer, tab.head, tab.cont);
-			}
-			// split pane container
-			else {
-				// re-init the divider (=targetContainer) we dropped on, since it has new neighbor (contentPane).
-				this.resetDividers();
 
+			}
+			// dropping on pane middle -> add a new tab
+			else if (cl.contains('middleOverlay')) {
+				tabBarFactory.addTab(targetContainer, dndData.head, dndData.cont);
+			}
+			// dropping on pane edge -> split pane container and create new parent for column or row layout
+			else {
 				if (source === targetOverlayContainer) {
 					// TODO: does not work on created pane yet after already toggling parent
 					overlayFactory.toggleClass(source);
 				}
-				// TODO: remove width of old neigbors for Divider to work properly
+				// TODO: remove width of old neighbors for Divider to work properly
 				// TODO: move to new method split()?
 				// add new container (where? top left bottom right?)
 				// use css order property together with flex-direction to find which edge we dropped on
@@ -84,7 +79,7 @@ console.log(source, target);
 				targetParent.insertBefore(paneContainer, targetContainer);
 				paneContainer.appendChild(targetContainer);
 				nodeDivider = dividerFactory.create(type);
-				pane = paneFactory.createContentPane(type, tab.head, tab.cont);
+				pane = paneFactory.create(type, dndData.head, dndData.cont);
 				if (idx === 0) {
 					paneContainer.insertBefore(nodeDivider, targetContainer);
 					paneContainer.insertBefore(pane, nodeDivider);
@@ -95,12 +90,16 @@ console.log(source, target);
 				}
 
 				this.registerDivider(nodeDivider);
-
-//this.reinitDividers();
 			}
-		},
 
-		initPanes: function() {},
+			if (tabBarFactory.getNumTabs(dndData.parent) === 0) {
+				paneFactory.remove(dndData.parent);
+			}
+
+			// reset dividers, since neighbors previous and after the drop have new neighbors.
+			// for simplicity we just reset all dividers.
+			this.resetDividers();
+		},
 
 		initDividers: function() {
 			var i, len, divider,
@@ -114,6 +113,10 @@ console.log(source, target);
 			}
 		},
 
+		/**
+		 * Create a divider and add it to the registry.
+		 * @param node
+		 */
 		registerDivider: function(node){
 			var divider = new Divider();
 			divider.init(node);
@@ -122,9 +125,10 @@ console.log(source, target);
 
 		resetDividers: function() {
 			registryDividers.forEach(function(divider) {
-				divider.removeEvents();
-				divider.resetNodes();
-				divider.init(divider.domNode);
+				//divider.removeEvents();
+				//divider.resetNodes();
+				//divider.init(divider.domNode);
+				divider.setNeighbors();
 			});
 		},
 

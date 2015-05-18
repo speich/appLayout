@@ -13,6 +13,8 @@ define(function() {
 	 */
 	return {
 
+		cssClassName: 'overlayContainer',
+
 		/**
 		 *
 		 * @param {string} type col or row

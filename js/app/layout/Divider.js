@@ -8,7 +8,7 @@ define([
 	'dojo/_base/lang',
 	'dojo/on',
 	'dojo/query',
-	'appLayout/layout/dividerFactory',
+	'./dividerFactory',
 	'dojo/NodeList-dom'
 ], function(declare, lang, on, query, dividerFactory) {
 	'use strict';
@@ -43,14 +43,13 @@ define([
 		 * @param {HTMLDivElement} domNode divider
 		 */
 		init: function(domNode) {
-			var neighbors = dividerFactory.findNeighbors(domNode);
+
 
 			// cache some properties/references for better performance and ease of access.
 			this.domNode = domNode;
-			this.node1 = neighbors.prev;
-			this.node2 = neighbors.next;
 			this.type = domNode.classList.contains('rowDivider') ? 'row' : 'col';
 
+			this.setNeighbors();
 			this.initEvents();
 		},
 
@@ -87,33 +86,42 @@ define([
 			}));
 		},
 
+		setNeighbors: function() {
+			var neighbors = dividerFactory.findNeighbors(this.domNode);
+
+			this.node1 = neighbors.prev;
+			this.node2 = neighbors.next;
+			neighbors = null;
+		},
+
 		/**
-		 * Find all nodes contributing to the width/height of the window.
+		 * Find all nodes contributing to the width/height of the window and cache them.
 		 * Searches the dom for width/height over all siblings on the same level or higher all the way up to the window
 		 * Returns an Object containing all nodes and the corresponding widths/heights
 		 * @return {object}
 		 */
 		findNodes: function() {
-			// note: either we start on an overlay of aquery on a divider or on a
-			// siblings can either be other contentPanes or paneContainers
+			// note: siblings can either be other contentPanes or paneContainers
+			//       only query containers of same type
 			var self = this,
 				obj = {
 					nodes: [],
 					values: []
 				},
-				startNode = this.domNode.parentNode,
-				style = this.type === 'col' ? 'width' : 'height';
+				style = this.type === 'col' ? 'width' : 'height',
+				containerType = (this.type === 'col' ? 'row' : 'col') + 'Container';
 
-			// query same level
-			query('> .contentPane, > .paneContainer', startNode).forEach(function findSiblings(node) {
+			// query same level, a dividers sibling panes can either be of type contentPane or paneContainer
+			query('> .contentPane, > .paneContainer', this.domNode.parentNode).forEach(function findSiblings(node) {
 				obj.nodes.push(node);
 				obj.values.push(self.getCssComputed(node, style));
 			});
 
-			// query all parent levels
-			query(startNode).parents('.paneContainer').forEach(function findSiblings(node) {
-				obj.nodes.push(node);
-				query('> .contentPane, > .paneContainer', node).forEach(function findSiblings(node) {
+			// query all parent levels, parents ony of same type
+			query(this.domNode).parents('.contentPane, .paneContainer.' + containerType).forEach(function findSiblings(node) {
+				var temp = node;
+				// query same levels
+				query(node).siblings('.contentPane, .paneContainer').forEach(function findSiblings(node) {
 					obj.nodes.push(node);
 					obj.values.push(self.getCssComputed(node, style));
 				});
