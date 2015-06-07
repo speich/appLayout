@@ -10,6 +10,12 @@ define(function() {
 
 		cssPaneClasses: ['contentPane', 'paneContainer', 'paneDivider'],
 
+		/**
+		 * Check if provided node belongs to a pane.
+		 * Checks for contentPanes, paneContainers and paneDividers.
+		 * @param {HTMLElement} node
+		 * @returns {boolean}
+		 */
 		checkIsPane: function(node) {
 			return this.cssPaneClasses.some(function(className) {
 
@@ -39,12 +45,11 @@ define(function() {
 		/**
 		 * Return number of sibling panes.
 		 * Only counts children having a css class of contentPane, paneContainer or paneDivider.
-		 * @param {HTMLElement} pane
+		 * @param {HTMLDivElement} pane
 		 * @return {Array}
 		 */
 		getSiblings: function(pane) {
-			var num = 0,
-				nl = pane.parentNode.children,
+			var nl = pane.parentNode.children,
 				siblings = [];
 
 			for(var i = 0, len = nl.length; i < len; i++) {
@@ -63,5 +68,5 @@ define(function() {
 
 			return arr.join();
 		}
-};
+	};
 });

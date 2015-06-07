@@ -16,20 +16,20 @@ define(function() {
 		cssClassName: 'overlayContainer',
 
 		/**
-		 *
+		 * Creates the overlay container element.
 		 * @param {string} type col or row
 		 * @return {HTMLDivElement}
 		 */
 		createContainer: function(type) {
 			var div = document.createElement('div');
 
-			div.classList.add('overlayContainer', type + 'Container', 'noPointerEvents');
+			div.classList.add(this.cssClassName, type + 'Container', 'noPointerEvents');
 
 			return div;
 		},
 
 		/**
-		 *
+		 * Creates the overlay element.
 		 * @param {String} type 'edge' or 'middle'
 		 * @return {HTMLDivElement}
 		 */
@@ -37,7 +37,6 @@ define(function() {
 			var div = document.createElement('div');
 
 			div.classList.add('overlay', type + 'Overlay');
-
 			this.initDnd(div);
 
 			return div;
@@ -67,19 +66,20 @@ define(function() {
 
 		/**
 		 * Enable receiving mouse events on overlays to show where we can drop.
-		 * @param {boolean} [force]
+		 * @param {boolean} [enable]
 		 */
-		enableMouseEventsAll: function(force) {
-			var overlays = document.getElementsByClassName('overlayContainer');
+		enableMouseEventsAll: function(enable) {
+			var overlays = document.getElementsByClassName(this.cssClassName),
+				fnc = enable === false ? 'add' : 'remove';
 
 			for (var i = 0, len = overlays.length; i < len; i++) {
-				overlays[i].classList.toggle('noPointerEvents', force);
+				overlays[i].classList[fnc]('noPointerEvents');
 			}
 		},
 
 		/**
-		 * Toogles the overlay from type row to col or vice versa.
-		 * @param overlayContainer
+		 * Toggles the overlay from type row to col or vice versa.
+		 * @param {HTMLDivElement} overlayContainer
 		 */
 		toggleClass: function(overlayContainer) {
 

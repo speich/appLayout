@@ -15,3 +15,5 @@ Drag and drop tab onto divider (split):
 ![Screenshot 1](screenshot-3.gif "Screenshot of appLayout")
 
 For more information read my [article about flexbox layout](https://hacks.mozilla.org/2013/12/application-layout-with-css3-flexible-box-module/) on hacks.mozilla.org.
+
+Requires dojo.js and NodeList-traverse.js
