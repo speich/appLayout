@@ -6,17 +6,10 @@
  */
 define([
 	'dojo/on',
-	'dojo/query',
 	'./overlayFactory',
-	'../domUtil',
-	'dojo/NodeList-traverse'], function(on, query, overlayFactory, domUtil) {
+	'../dndManager',
+	'dojo/NodeList-traverse'], function(on, overlayFactory, dndManager) {
 	'use strict';
-
-	var dndReference = {
-		head: null,
-		cont: null,
-		parent: null
-	};
 
 	/**
 	 * Factory to create tabs and a tabbed navigation bar.
@@ -69,41 +62,14 @@ define([
 			on(tabContainer, 'li:dragstart', function(evt) {
 				// enable receiving mouse events on overlays to show where we can drop
 				// note: overlays are set not to receive pointer events by default, otherwise we could not drag a tab
-				overlayFactory.enableMouseEventsAll();
-				self.setDndData(evt, this);
+				overlayFactory.enableMouseEventsAll(true);
+				dndManager.setDndData(evt, this);
 			});
 
 			// disable receiving mouse events on overlays, otherwise we could not drag a tab
-			on(tabContainer, 'li:dragend', overlayFactory.enableMouseEventsAll);
-		},
-
-		/**
-		 * Sets the tab data to be dragged.
-		 * @param {Event} evt
-		 * @param {HTMLLIElement} tab
-		 */
-		setDndData: function(evt, tab) {
-			// note: element order of li element (tab) is assumed to be same as order of section elements (tabContent)
-			var cp, idx = domUtil.getElementIndex(tab);
-
-			cp = query(tab.parentNode).parents('.contentPane')[0];
-
-			// Drag types are limited to text or serialized html -> store a reference or create a container html and serialize it
-			dndReference = {
-				head: tab,
-				cont: cp.getElementsByTagName('section')[idx],
-				parent: cp
-			};
-			evt.dataTransfer.setData('tab', dndReference);  // dummy data to make browser show correct dnd image
-			evt.dataTransfer.effectAllowed = 'move';
-		},
-
-		/**
-		 * Returns the dragged tab data.
-		 * @returns {{head: {HTMLUListElement}, cont: {HTMLElement}}}
-		 */
-		getDndData: function() {
-			return dndReference;
+			on(tabContainer, 'li:dragend', function() {
+				overlayFactory.enableMouseEventsAll(false);
+			});
 		},
 
 		/**
@@ -134,7 +100,7 @@ define([
 
 		/**
 		 * Return the number of tabs in the tab bar.
-		 * @param {HTMLDivElement} contentPane
+		 * @param {HTMLDivElement} contentPane containing tab bar
 		 * @return {number}
 		 */
 		getNumTabs: function(contentPane) {

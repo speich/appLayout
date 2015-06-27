@@ -1,3 +1,6 @@
+/**
+ * @module paneFactory
+ */
 define([
 	'./paneUtil',
 	'./overlayFactory',
@@ -28,17 +31,17 @@ define([
 
 		/**
 		 * Creates the DOM of the content pane.
-		 * @param {String} type overlay type 'row' or 'col'
+		 * @param {String} overlayType overlay type 'row' or 'col'
 		 * @param {Array} [tabs]
 		 * @param {HTMLElement} [tabContent] section element
 		 * @return {HTMLDivElement}
 		 */
-		create: function(type, tabs, tabContent) {
+		create: function(tabs, tabContent, overlayType) {
 			var div = document.createElement('div'),
 				header = document.createElement('header'),
 				section = tabContent || document.createElement('section'),
 				tabBar = tabBarFactory.create([tabs]),
-				overlay = this.createOverlays(type);
+				overlay = this.createOverlays(overlayType);
 
 			div.classList.add(this.clNameContentPane);
 
@@ -50,26 +53,30 @@ define([
 			return div;
 		},
 
+		/**
+		 * Removes a contentPane and the corresponding divider from the DOM.
+		 * If the pane does not have any siblings the parentContainer is also removed.
+		 * @param {HTMLDivElement} pane contentPane
+		 */
 		remove: function(pane) {
 			// note: order of removing of children is important
-			var idx = paneUtil.getIndex(pane),
-				siblings = paneUtil.getSiblings(pane),
+			var z, idx = paneUtil.getIndex(pane),
+				siblings = paneUtil.getSiblings(pane),	// does not return a live nodelist
 				parent = pane.parentNode;
 
 			parent.removeChild(pane);
 
-			if (siblings === 0) {
+			// last pane in a paneContainer?
+			if (siblings.length === 1) { // otherwise length would be at least 2, because of the divider
+				// handles case only when no siblings in paneContainer
+				// now without a divider but in a paneContainer with a divider
+				// remove paneContainer and corresponding divider
 				this.remove(parent);
 			}
-			// also remove the divider after the pane except when last pane
+			// remove the divider
 			else {
-				if(idx === siblings.length - 1) {
-					parent.removeChild(siblings[idx - 1]);
-				}
-				else {
-					parent.removeChild(siblings[idx + 1]);
-				}
-				// remove parentContainer if any
+				z = idx === siblings.length - 1 ? idx - 1 : idx + 1;
+				parent.removeChild(siblings[z]);
 			}
 		},
 
@@ -91,6 +98,14 @@ define([
 		},
 
 		/**
+		 * Returns the overlay container.
+		 * @param {HTMLDivElement} pane contentPane
+		 */
+		getOverlayContainer: function(pane) {
+			return pane.getElementsByClassName(overlayFactory.cssClassName)[0];
+		},
+
+		/**
 		 * Create and insert a new content pane above or left of the target.
 		 * Creates the DOM of a pane, inserts it before the passed node and returns the pane.
 		 * @param target
@@ -99,11 +114,11 @@ define([
 		 * @return {Node}
 		 */
 		insertBefore: function(target, tab, tabContent) {
-			var contentPane, type,
+			var contentPane, overlayType,
 				parent = target.parentNode;
 
-			type = parent.classList.contains('rowContainer') ? 'col' : 'row';
-			contentPane = this.create(type, tab, tabContent);
+			overlayType = parent.classList.contains('rowContainer') ? 'col' : 'row';
+			contentPane = this.create(tab, tabContent, overlayType);
 			parent.insertBefore(contentPane, target);
 
 			return contentPane;
