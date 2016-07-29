@@ -1,151 +1,147 @@
 <!DOCTYPE html>
 <html lang="en-US" dir="ltr">
 <head>
-	<title>Web application: Resizable flex layout with drag and drop</title>
-	<meta charset="utf-8">
-
-	<link rel="stylesheet" href="js/app/resources/format.css">
-
-	<script>
-		var dojoConfig = {
-			async: true,
-			baseUrl: '/js/lib',
-			packages: [
-				{name: 'dojo', location: 'dojo-1.10.4'},
-				{name: 'app', location: '../app'}
-			]
-		};
-	</script>
-	<script defer src="js/lib/dojo-1.10.4/dojo.js"></script>
-	<script defer src="js/app.js"></script>
-
+<title>Web application: Resizable flex layout with drag and drop</title>
+<meta charset="utf-8">
+<link rel="stylesheet" href="js/app/resources/format.css">
+<script>
+var dojoConfig = {
+	async: true,
+	baseUrl: '/js/libs',
+	packages: [
+		{name: 'dojo', location: 'dojo/1.11.1/dojo'},
+		{name: 'app', location: '../app'}
+	]
+};
+</script>
+<script defer src="js/libs/dojo/1.11.1/dojo/dojo.js"></script>
+<script defer src="js/app.js"></script>
 </head>
 
 <body class="appLayout">
 <header>header</header>
 <main class="rowContainer">
-
 	<div class="contentPane">
-		<header>
-			<ul class="tabbedNav">
-				<li>Preview</li>
-			</ul>
-		</header>
-		<section>This is a working demo of the appLayout library, which can be obtained from <a
-				href="https://github.com/speich/appLayout" target="_blank">github</a></section>
-		<div class="overlayContainer colContainer noPointerEvents">
-			<div class="overlay edgeOverlay"></div>
-			<div class="overlay middleOverlay"></div>
-			<div class="overlay edgeOverlay"></div>
-		</div>
+	<header>
+		<ul class="tabbedNav">
+		<li>Preview</li>
+		</ul>
+	</header>
+	<section>This is a working demo of the appLayout library, which can be obtained from <a
+	href="https://github.com/speich/appLayout" target="_blank">github</a></section>
+	<div class="overlayContainer colContainer noPointerEvents">
+	<div class="overlay edgeOverlay"></div>
+	<div class="overlay middleOverlay"></div>
+	<div class="overlay edgeOverlay"></div>
+	</div>
 	</div>
 
 	<div class="paneDivider rowDivider">
-		<div class="overlayContainer rowContainer noPointerEvents">
-			<div class="overlay edgeOverlay"></div>
-		</div>
+	<div class="overlayContainer rowContainer noPointerEvents">
+	<div class="overlay edgeOverlay"></div>
+	</div>
 	</div>
 
 	<div class="paneContainer colContainer">
 
-		<div class="paneContainer rowContainer">
-			<div class="paneContainer colContainer">
-				<div style="" class="contentPane">
-					<div class="overlayContainer rowContainer noPointerEvents">
-						<div class="overlay edgeOverlay"></div>
-						<div class="overlay middleOverlay"></div>
-						<div class="overlay edgeOverlay"></div>
-					</div>
-					<header>
-						<ul class="tabbedNav">
-							<li draggable="true" class="active">Content</li>
-							<li draggable="true">Folders</li>
-						</ul>
-					</header>
-					<section>content content</section>
-					<section class="displayNone">folder content</section>
-				</div>
-				<div class="paneDivider colDivider">
-					<div class="overlayContainer colContainer noPointerEvents">
-						<div class="overlay edgeOverlay"></div>
-					</div>
-				</div>
-				<div class="contentPane">
-					<div class="overlayContainer rowContainer noPointerEvents">
-						<div class="overlay edgeOverlay"></div>
-						<div class="overlay middleOverlay"></div>
-						<div class="overlay edgeOverlay"></div>
-					</div>
-					<header>
-						<ul class="tabbedNav">
-							<li draggable="true">Keywords</li>
-						</ul>
-					</header>
-					<section class="displayNone"></section>
-				</div>
-			</div>
+	<div class="paneContainer rowContainer">
+	<div class="paneContainer colContainer">
+	<div style="" class="contentPane">
+	<div class="overlayContainer rowContainer noPointerEvents">
+	<div class="overlay edgeOverlay"></div>
+	<div class="overlay middleOverlay"></div>
+	<div class="overlay edgeOverlay"></div>
+	</div>
+	<header>
+		<ul class="tabbedNav">
+		<li draggable="true" class="active">Content</li>
+		<li draggable="true">Folders</li>
+		</ul>
+	</header>
+	<section>content content</section>
+	<section class="displayNone">folder content</section>
+	</div>
+	<div class="paneDivider colDivider">
+	<div class="overlayContainer colContainer noPointerEvents">
+	<div class="overlay edgeOverlay"></div>
+	</div>
+	</div>
+	<div class="contentPane">
+	<div class="overlayContainer rowContainer noPointerEvents">
+	<div class="overlay edgeOverlay"></div>
+	<div class="overlay middleOverlay"></div>
+	<div class="overlay edgeOverlay"></div>
+	</div>
+	<header>
+		<ul class="tabbedNav">
+		<li draggable="true">Keywords</li>
+		</ul>
+	</header>
+	<section class="displayNone"></section>
+	</div>
+	</div>
 
-			<div class="paneDivider rowDivider">
-				<div class="overlayContainer rowContainer noPointerEvents">
-					<div class="overlay edgeOverlay"></div>
-				</div>
-			</div>
+	<div class="paneDivider rowDivider">
+	<div class="overlayContainer rowContainer noPointerEvents">
+	<div class="overlay edgeOverlay"></div>
+	</div>
+	</div>
 
-			<div class="contentPane">
-				<div class="overlayContainer colContainer noPointerEvents">
-					<div class="overlay edgeOverlay"></div>
-					<div class="overlay middleOverlay"></div>
-					<div class="overlay edgeOverlay"></div>
-				</div>
-				<header>
-					<ul class="tabbedNav">
-						<li>Collections</li>
-					</ul>
-				</header>
-				<section></section>
-			</div>
-		</div>
+	<div class="contentPane">
+	<div class="overlayContainer colContainer noPointerEvents">
+	<div class="overlay edgeOverlay"></div>
+	<div class="overlay middleOverlay"></div>
+	<div class="overlay edgeOverlay"></div>
+	</div>
+	<header>
+		<ul class="tabbedNav">
+		<li>Collections</li>
+		</ul>
+	</header>
+	<section></section>
+	</div>
+	</div>
 
-		<div class="paneDivider colDivider">
-			<div class="overlayContainer colContainer noPointerEvents">
-				<div class="overlay edgeOverlay"></div>
-			</div>
-		</div>
+	<div class="paneDivider colDivider">
+	<div class="overlayContainer colContainer noPointerEvents">
+	<div class="overlay edgeOverlay"></div>
+	</div>
+	</div>
 
-		<div class="contentPane">
-			<div class="overlayContainer rowContainer noPointerEvents">
-				<div class="overlay edgeOverlay"></div>
-				<div class="overlay middleOverlay"></div>
-				<div class="overlay edgeOverlay"></div>
-			</div>
-			<header>
-				<ul class="tabbedNav">
-					<li>Map</li>
-				</ul>
-			</header>
-			<section></section>
+	<div class="contentPane">
+	<div class="overlayContainer rowContainer noPointerEvents">
+	<div class="overlay edgeOverlay"></div>
+	<div class="overlay middleOverlay"></div>
+	<div class="overlay edgeOverlay"></div>
+	</div>
+	<header>
+		<ul class="tabbedNav">
+		<li>Map</li>
+		</ul>
+	</header>
+	<section></section>
 
-		</div>
+	</div>
 
-		<div class="paneDivider colDivider">
-			<div class="overlayContainer colContainer noPointerEvents">
-				<div class="overlay edgeOverlay"></div>
-			</div>
-		</div>
+	<div class="paneDivider colDivider">
+	<div class="overlayContainer colContainer noPointerEvents">
+	<div class="overlay edgeOverlay"></div>
+	</div>
+	</div>
 
-		<div class="contentPane">
-			<div class="overlayContainer rowContainer noPointerEvents">
-				<div class="overlay edgeOverlay"></div>
-				<div class="overlay middleOverlay"></div>
-				<div class="overlay edgeOverlay"></div>
-			</div>
-			<header>
-				<ul class="tabbedNav">
-					<li>Filter</li>
-				</ul>
-			</header>
-			<section></section>
-		</div>
+	<div class="contentPane">
+	<div class="overlayContainer rowContainer noPointerEvents">
+	<div class="overlay edgeOverlay"></div>
+	<div class="overlay middleOverlay"></div>
+	<div class="overlay edgeOverlay"></div>
+	</div>
+	<header>
+		<ul class="tabbedNav">
+		<li>Filter</li>
+		</ul>
+	</header>
+	<section></section>
+	</div>
 	</div>
 </main>
 <footer>footer</footer>
