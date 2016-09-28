@@ -21,8 +21,7 @@ define([
 
 	return {
 
-		init: function
-			() {
+		init: function() {
 			this.initEvents();
 			this.initDividers();
 			this.initDnd();
@@ -134,9 +133,10 @@ define([
 			overlayFactory.toggleClass(targetOverlayContainer);
 
 			// 3. create a new contentPane and divider and add them to the paneContainer
-			idx = domUtil.getElementIndex(targetOverlay);
-			pane = paneFactory.create(dndData.head, dndData.cont, type === 'col' ? 'row' : 'col');
+			type = type === 'col' ? 'row' : 'col';
+			pane = paneFactory.create([dndData.head], dndData.cont, type);
 			nodeDivider = dividerFactory.create(type);
+			idx = domUtil.getElementIndex(targetOverlay);
 			if(idx === 0) {
 				// dropped on top or left
 				paneContainer.insertBefore(nodeDivider, targetContainer);

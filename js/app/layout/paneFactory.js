@@ -17,7 +17,7 @@ define([
 		/**
 		 * Creates the element, which serves as the parent of a content pane.
 		 * The pane container comes in two types. A row container, where the children are aligned in rows, and a col
-		 * container, where the children are layout out as columns.
+		 * container, where the children are laid out out as columns.
 		 * @param {string} type colContainer or rowContainer
 		 * @return {HTMLDivElement}
 		 */
@@ -40,7 +40,7 @@ define([
 			var div = document.createElement('div'),
 				header = document.createElement('header'),
 				section = tabContent || document.createElement('section'),
-				tabBar = tabBarFactory.create([tabs]),
+				tabBar = tabBarFactory.create(tabs),
 				overlay = this.createOverlays(overlayType);
 
 			div.classList.add(this.clNameContentPane);

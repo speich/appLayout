@@ -16,7 +16,6 @@ define(function() {
 
 			for(var i = 0, len = els.length; i < len; i++) {
 				if(els[i] === element) {
-
 					return i;
 				}
 			}

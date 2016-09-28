@@ -82,7 +82,6 @@ define(function() {
 		 * @param {HTMLDivElement} overlayContainer
 		 */
 		toggleClass: function(overlayContainer) {
-
 			var cl = overlayContainer.classList,
 				type = cl.contains('rowContainer') ? 'row' : 'col';
 
