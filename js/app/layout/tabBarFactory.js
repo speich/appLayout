@@ -58,7 +58,7 @@ define([
 				tabs[i].setAttribute('draggable', true);
 			}
 
-			// use event delegation for tabs. This allows for easy adding a new tab without having to add the dnd events to each tab.
+			// use event delegation for tabs. This allows for easy adding a new tab without having to add the dnd events to each (new or moved) tab.
 			on(tabContainer, 'li:dragstart', function(evt) {
 				// enable receiving mouse events on overlays to show where we can drop
 				// note: overlays are set not to receive pointer events by default, otherwise we could not drag a tab
@@ -80,7 +80,7 @@ define([
 		 * @param {HTMLElement} tabContent of source
 		 */
 		addTab: function(contentPane, tab, tabContent) {
-			var sections,
+			var sections, tabs,
 				tabBar = contentPane.getElementsByClassName(this.cssClass)[0];
 
 			// add dragged source tab to target tabBar
@@ -95,6 +95,10 @@ define([
 				sections[i].classList.add('displayNone');
 			}
 			sections[i-1].classList.remove('displayNone');
+			tabs = contentPane.querySelectorAll('.tabbedNav li.active');
+			for (let t of tabs) {
+				t.classList.remove('active');
+			}
 			tab.classList.add('active');
 		},
 
