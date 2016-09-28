@@ -59,6 +59,8 @@ header, footer {
 
 .contentPane section {
 	flex: auto;
+	padding: 0.5em;
+	overflow: auto;
 }
 
 .overlayContainer {
@@ -122,6 +124,7 @@ header, footer {
 	align-items: flex-end;
 	height: 100%;
 	overflow: hidden;
+	cursor: pointer;
 }
 
 .tabbedNav li {
