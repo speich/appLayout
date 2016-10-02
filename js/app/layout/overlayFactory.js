@@ -4,12 +4,13 @@
  * @module layout/overlayFactory
  * @see layout.overlayFactory
  */
-define(function() {
+define(['dojo/on'], function(on) {
 	'use strict';
+
+	var d = document;
 
 	/**
 	 * Factory to create overlays for a contentPane.
-	 * @class layout.overlayFactory
 	 */
 	return {
 
@@ -21,9 +22,10 @@ define(function() {
 		 * @return {HTMLDivElement}
 		 */
 		createContainer: function(type) {
-			var div = document.createElement('div');
+			var div = d.createElement('div');
 
 			div.classList.add(this.cssClassName, type + 'Container', 'noPointerEvents');
+			this.initDnd(div);
 
 			return div;
 		},
@@ -34,31 +36,38 @@ define(function() {
 		 * @return {HTMLDivElement}
 		 */
 		create: function(type) {
-			var div = document.createElement('div');
+			var div = d.createElement('div');
 
 			div.classList.add('overlay', type + 'Overlay');
-			this.initDnd(div);
 
 			return div;
 		},
 
+		initDndAll: function() {
+			var i, len,
+				nl = d.getElementsByClassName(this.cssClassName);
+
+			for(i = 0, len = nl.length; i < len; i++) {
+				this.initDnd(nl[i]);
+			}
+		},
+
 		/**
 		 * Add allow dropping to overlay.
-		 * @param {HTMLElement} overlay
+		 * @param {HTMLDivElement} container
 		 */
-		initDnd: function(overlay) {
-			// TODO: use event delegation on contentPane instead of attaching to each overlay?
-			overlay.addEventListener('dragenter', function () {
+		initDnd: function(container) {
+			on(container, '.overlay:dragenter', function() {
 				this.classList.add('overlayActive');
 			});
-			overlay.addEventListener('dragover', function (evt) {
+			on(container, '.overlay:dragover', function(evt) {
 				evt.preventDefault();   // necessary to allow dropping
 				return false;
 			});
-			overlay.addEventListener('dragleave', function () {
+			on(container, '.overlay:dragleave', function() {
 				this.classList.remove('overlayActive');
 			});
-			overlay.addEventListener('drop', function (evt) {
+			on(container, '.overlay:drop', function(evt) {
 				this.classList.remove('overlayActive');
 				evt.preventDefault();
 			});
@@ -69,7 +78,7 @@ define(function() {
 		 * @param {boolean} [enable]
 		 */
 		enableMouseEventsAll: function(enable) {
-			var overlays = document.getElementsByClassName(this.cssClassName),
+			var overlays = d.getElementsByClassName(this.cssClassName),
 				fnc = enable === false ? 'add' : 'remove';
 
 			for (var i = 0, len = overlays.length; i < len; i++) {

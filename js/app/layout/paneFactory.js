@@ -32,15 +32,16 @@ define([
 		/**
 		 * Creates the DOM of the content pane.
 		 * @param {String} overlayType overlay type 'row' or 'col'
-		 * @param {Array} [tabs]
-		 * @param {HTMLElement} [tabContent] section element
+		 * @param {Array} [tabs] array of HTMLLIElements
+		 * @param {Array} [tabContents] array of HTMLSectionElements
 		 * @return {HTMLDivElement}
 		 */
-		create: function(tabs, tabContent, overlayType) {
+		create: function(overlayType, tabs, tabContents) {
 			var div = document.createElement('div'),
 				header = document.createElement('header'),
-				section = tabContent || document.createElement('section'),
-				tabBar = tabBarFactory.create(tabs),
+				li = tabs || [document.createElement('li')],
+				sections = tabContents || [document.createElement('section')],
+				tabBar = tabBarFactory.create(li),
 				overlay = this.createOverlays(overlayType);
 
 			div.classList.add(this.clNameContentPane);
@@ -48,7 +49,9 @@ define([
 			div.appendChild(overlay);
 			header.appendChild(tabBar);
 			div.appendChild(header);
-			div.appendChild(section);
+			for (var i = 0; i < sections.length; i++) {
+				div.appendChild(sections[i]);
+			}
 
 			return div;
 		},
@@ -118,7 +121,7 @@ define([
 				parent = target.parentNode;
 
 			overlayType = parent.classList.contains('rowContainer') ? 'col' : 'row';
-			contentPane = this.create(tab, tabContent, overlayType);
+			contentPane = this.create(overlayType, tab, tabContent);
 			parent.insertBefore(contentPane, target);
 
 			return contentPane;

@@ -34,7 +34,6 @@ define(function() {
 
 			for(var i = 0, len = nl.length; i < len; i++) {
 				if(nl[i] === pane && this.checkIsPane(nl[i])) {
-
 					return i;
 				}
 			}

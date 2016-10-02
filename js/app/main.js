@@ -30,6 +30,7 @@ define([
 		initDnd: function() {
 			var self = this;
 
+			overlayFactory.initDndAll();
 			tabBarFactory.initDndAll();
 
 			on(d.getElementsByTagName('main')[0], '.overlayContainer:drop', function(evt) {
@@ -134,7 +135,7 @@ define([
 
 			// 3. create a new contentPane and divider and add them to the paneContainer
 			type = type === 'col' ? 'row' : 'col';
-			pane = paneFactory.create([dndData.head], dndData.cont, type);
+			pane = paneFactory.create(type, [dndData.head], [dndData.cont]);
 			nodeDivider = dividerFactory.create(type);
 			idx = domUtil.getElementIndex(targetOverlay);
 			if(idx === 0) {
@@ -207,12 +208,12 @@ define([
 		},
 
 		initEvents: function() {
-			var i, len,
-				nl = d.getElementsByClassName('overlay');
+			let node, nl = document.getElementsByClassName(tabBarFactory.cssClass);
 
-			for(i = 0, len = nl.length; i < len; i++) {
-				overlayFactory.initDnd(nl[i]);
+			for (node of nl) {
+				tabBarFactory.initEvents(node);
 			}
+
 		}
 	};
 });

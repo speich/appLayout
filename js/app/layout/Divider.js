@@ -18,7 +18,7 @@ define([
 	/**
 	 * Creates the divider object.
 	 * Layout should consist of a handle element (divider) and two container elements to either side of it, which will
-	 * be resized when the divider is dragged. Neighbors have to have a fixed width/height for this to work.
+	 * be resized when the divider is dragged. Neighbors need to have a fixed width/height for this to work.
 	 * @class Divider
 	 * @property {String} [type] col or row divider
 	 * @property {HTMLElement} domNode divider container
@@ -43,8 +43,6 @@ define([
 		 * @param {HTMLDivElement} domNode divider
 		 */
 		init: function(domNode) {
-
-
 			// cache some properties/references for better performance and ease of access.
 			this.domNode = domNode;
 			this.type = domNode.classList.contains('rowDivider') ? 'row' : 'col';
@@ -119,7 +117,6 @@ define([
 
 			// query all parent levels, parents ony of same type
 			query(this.domNode).parents('.contentPane, .paneContainer.' + containerType).forEach(function findSiblings(node) {
-				var temp = node;
 				// query same levels
 				query(node).siblings('.contentPane, .paneContainer').forEach(function findSiblings(node) {
 					obj.nodes.push(node);
