@@ -16,7 +16,7 @@ define([
 	// TODO: preserve state by storing dom in indexedDb
 	// TODO: use indexedDb also for undo
 
-	var d = document,
+	let d = document,
 		registryDividers = [];  // keep a registry of dividers, since d.getElementsByClassName('paneDivider') only gets us access to the DOM node, but not to the Divider class.
 
 	return {
@@ -27,16 +27,16 @@ define([
 			this.initDnd();
 		},
 
+		/**
+		 * Initialize drag and drop.
+		 */
 		initDnd: function() {
-			var self = this;
-
 			overlayFactory.initDndAll();
 			tabBarFactory.initDndAll();
 
 			on(d.getElementsByTagName('main')[0], '.overlayContainer:drop', function(evt) {
-				// TODO: do nothing o self-drop, e.g. dropping on an own overlay
-				self.drop(evt.target);
-			});
+				this.drop(evt.target);
+			}.bind(this));
 		},
 
 		/**
@@ -45,7 +45,7 @@ define([
 		 */
 		drop: function(targetOverlay) {
 			// TODO: split method into smaller parts
-			var cl = targetOverlay.classList,
+			let cl = targetOverlay.classList,
 				targetOverlayContainer = query(targetOverlay).parents('.overlayContainer')[0],// note: overlay containers can have different dom (overlay over divider vs. overlay over contentPane)
 				targetContainer = query(targetOverlayContainer).parents('.contentPane, .paneDivider')[0],
 				targetParent = targetContainer.parentNode,
@@ -113,19 +113,21 @@ define([
 		 * @param targetOverlay
 		 * @param targetOverlayContainer
 		 * @param targetContainer
-		 * @param dndData
+		 * @param {Object} dndData
 		 */
 		edgeDrop: function(targetOverlay, targetOverlayContainer, targetContainer, dndData) {
-			var type, paneContainer, idx, pane, nodeDivider,
+			let type, oppositeType, paneContainer, idx, pane, nodeDivider,
 				targetParent = targetContainer.parentNode;
 
-			if (dndData.parent === targetContainer) {
-				// dropped on own overlay
+			if (dndData.parent === targetContainer && tabBarFactory.getNumTabs(dndData.parent) === 1) {
+				// dropped on own overlay, don't do anything when onyl one tab
 				return false;
 			}
 
-			// 1. create a new paneContainer as parent for column or row layout
 			type = targetParent.classList.contains('rowContainer') ? 'col' : 'row';
+			oppositeType = type === 'col' ? 'row' : 'col'
+
+			// 1. create a new paneContainer as parent for column or row layout
 			paneContainer = paneFactory.createPaneContainer(type);
 			targetParent.insertBefore(paneContainer, targetContainer);
 
@@ -134,8 +136,7 @@ define([
 			overlayFactory.toggleClass(targetOverlayContainer);
 
 			// 3. create a new contentPane and divider and add them to the paneContainer
-			type = type === 'col' ? 'row' : 'col';
-			pane = paneFactory.create(type, [dndData.head], [dndData.cont]);
+			pane = paneFactory.create(oppositeType, [dndData.head], [dndData.cont]);
 			nodeDivider = dividerFactory.create(type);
 			idx = domUtil.getElementIndex(targetOverlay);
 			if(idx === 0) {
