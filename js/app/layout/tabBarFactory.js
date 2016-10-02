@@ -6,7 +6,8 @@ define([
 	'dojo/on',
 	'./overlayFactory',
 	'../dndManager',
-	'dojo/NodeList-traverse'], function(on, overlayFactory, dndManager) {
+	'../domUtil',
+	'dojo/NodeList-traverse'], function(on, overlayFactory, dndManager, domUtil) {
 	'use strict';
 
 	/**
@@ -42,10 +43,11 @@ define([
 			let self = this,
 				contentPane = ul;
 
-			while (!contentPane.classList.contains('contentPane')) {
-				contentPane = contentPane.parentNode;
-			}
 			on(ul, 'li:click', function(){
+				while (!contentPane.classList.contains('contentPane')) {
+					// find parent inside this event allows adding events to tabbar before the bar is appended to the contentPane
+					contentPane = contentPane.parentNode;
+				}
 				self.showContent(this, contentPane);
 				self.setActive(this, contentPane);
 			});
@@ -121,34 +123,17 @@ define([
 		},
 
 		/**
-		 * Return the index of a tab in the tab bar.
-		 * @param {HTMLLIElement} tab
-		 * @return {Number}
-		 */
-		getIndex: function(tab) {
-			let i, len, nl = tab.parentNode.children;
-
-			for (i = 0, len = nl.length; i < len; i++) {
-				if(nl[i] === tab) {
-					return i;
-				}
-			}
-
-			return i;
-		},
-
-
-		/**
 		 * Show content
 		 * @param {HTMLDivElement} contentPane div containing tab bar
 		 */
 		showContent: function(currTab, contentPane) {
-			let sections = contentPane.getElementsByTagName('section');
+			let idx, sections = contentPane.getElementsByTagName('section');
 
 			for (var i = 0, len = sections.length; i < len; i++) {
 				sections[i].classList.add('displayNone');
 			}
-			sections[this.getIndex(currTab)].classList.remove('displayNone');
+			idx = domUtil.getElementIndex(currTab);
+			sections[idx].classList.remove('displayNone');
 		},
 
 		/**
