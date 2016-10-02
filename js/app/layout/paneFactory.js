@@ -121,7 +121,7 @@ define([
 				parent = target.parentNode;
 
 			overlayType = parent.classList.contains('rowContainer') ? 'col' : 'row';
-			contentPane = this.create(overlayType, tab, tabContent);
+			contentPane = this.create(overlayType, [tab], [tabContent]);
 			parent.insertBefore(contentPane, target);
 
 			return contentPane;
